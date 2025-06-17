@@ -5,11 +5,18 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://webgl2fundamentals.org/webgl/resources/m4.js"></script>
+    <link rel="stylesheet" href="./src/style.css" />
     <title>Vite App</title>
   </head>
   <body>
     <div id="app">
-      <canvas id="canvas" width="640" height="480"></canvas>
+      <canvas id="canvas"></canvas>
+      <div id="controls">
+        <p>WASD = Move</p>
+        <p>1,2,3 = toggle lights</p>
+        <p>Click with mouse to move camera (esc to quit it)</p>
+      </div>
+    
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>

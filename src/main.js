@@ -38,7 +38,7 @@ async function main() {
 
     const cameraPosition = [0, 0, 4];
     let cameraRotation = {
-        yaw: 0,    // giro horizontal (em radianos)
+        yaw: Math.PI,    // giro horizontal (em radianos)
         pitch: 0,  // giro vertical (em radianos)
     };
     const movementSpeed = 2.5; // unidades por segundo
@@ -53,14 +53,14 @@ async function main() {
 
 
 
-window.addEventListener('mousemove', (e) => {
-    if (document.pointerLockElement === canvas) {
-        // inverta o sinal aqui para yaw e veja o resultado
-        cameraRotation.yaw -= e.movementX * mouseSensitivity;
-        cameraRotation.pitch -= e.movementY * mouseSensitivity;
-        cameraRotation.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.pitch));
-    }
-});
+    window.addEventListener('mousemove', (e) => {
+        if (document.pointerLockElement === canvas) {
+            // inverta o sinal aqui para yaw e veja o resultado
+            cameraRotation.yaw -= e.movementX * mouseSensitivity;
+            cameraRotation.pitch -= e.movementY * mouseSensitivity;
+            cameraRotation.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.pitch));
+        }
+    });
 
     window.addEventListener('keydown', (e) => {
         keysPressed[e.key.toLowerCase()] = true;
@@ -77,6 +77,32 @@ window.addEventListener('mousemove', (e) => {
     });
 
 
+    let lights = {
+        keyLight: {
+            position: [5, 10, 5],
+            color: [1.0, 0.95, 0.8],
+            on: true
+        },
+        fillLight: {
+            position: [-5, 5, 5],
+            color: [0.4, 0.4, 0.5],
+            on: true
+        },
+        backLight: {
+            position: [0, 5, -5],
+            color: [0.3, 0.3, 0.4],
+            on: true
+        }
+    };
+
+    window.addEventListener('keydown', (e) => {
+        keysPressed[e.key.toLowerCase()] = true;
+
+        // Toggle luzes com 1, 2, 3
+        if (e.key === '1') lights.keyLight.on = !lights.keyLight.on;
+        if (e.key === '2') lights.fillLight.on = !lights.fillLight.on;
+        if (e.key === '3') lights.backLight.on = !lights.backLight.on;
+    });
 
 
 
@@ -173,6 +199,28 @@ window.addEventListener('mousemove', (e) => {
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.uniform1i(gl.getUniformLocation(meshProgramInfo.program, "textureSampler"), 0);
+
+        setUniforms(gl, meshProgramInfo.program, {
+            lightDirection: m4.normalize([-1, 3, 5]), // Pode remover se não usar mais
+            view: view,
+            projection: projection,
+            world: m4.identity(),
+            diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
+
+            keyLightPos: lights.keyLight.position,
+            keyLightColor: lights.keyLight.color,
+            keyLightOn: Number(lights.keyLight.on),
+
+            fillLightPos: lights.fillLight.position,
+            fillLightColor: lights.fillLight.color,
+            fillLightOn: Number(lights.fillLight.on),
+
+            backLightPos: lights.backLight.position,
+            backLightColor: lights.backLight.color,
+            backLightOn: Number(lights.backLight.on),
+        });
+
+
 
         drawBufferInfo(gl, bufferInfo);
         requestAnimationFrame(render);

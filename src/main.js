@@ -5,6 +5,7 @@ import { setUniforms } from './webgl/uniforms.js';
 import { parseOBJ } from './webgl/parsers/obj-parser.js';
 import { parseMTL } from './webgl/parsers/mtl-parser.js';
 import { loadTexture } from './webgl/texture.js';
+import { getObjectData } from './misc/obj-selector.js';
 
 
 async function main() {
@@ -13,6 +14,7 @@ async function main() {
     if (!gl) return;
 
 
+    let objectData = getObjectData('suzanne', 'suzanne');
     let vs = await fetch('../public/shaders/vertex-shader.vs')
     let fs = await fetch('../public/shaders/fragment-shader.fs')
 
@@ -21,29 +23,27 @@ async function main() {
 
     const meshProgramInfo = createProgramFromSources(gl, [vs, fs]);
 
-    // const response = await fetch('https://webgl2fundamentals.org/webgl/resources/models/cube/cube.obj');
-    const response = await fetch('../public/assets/Modelos3D/Suzanne.obj');
+    const response = await fetch(objectData.obj);
     const text = await response.text();
     const data = parseOBJ(text);
 
     const mtlName = data.materialsLibs[0];
-    const mtlResponse = await fetch(`../public/assets/Modelos3D/Suzanne.mtl`);
+    const mtlResponse = await fetch(objectData.mtl);
     const mtlText = await mtlResponse.text();
     const materials = parseMTL(mtlText);
 
     const bufferInfo = createVAOFromData(gl, data, meshProgramInfo.program);
 
 
-    // const texture = loadTexture(gl, `../public/assets/tex/pixelWall.png`);
-    const texture = loadTexture(gl, `../public/assets/Modelos3D/Suzanne.png`);
+    const texture = loadTexture(gl, objectData.tex);
 
     const cameraPosition = [0, 0, 4];
     let cameraRotation = {
-        yaw: Math.PI,    // giro horizontal (em radianos)
-        pitch: 0,  // giro vertical (em radianos)
+        yaw: Math.PI,
+        pitch: 0,
     };
-    const movementSpeed = 2.5; // unidades por segundo
-    const mouseSensitivity = 0.002; // ajuste fino do mouse
+    const movementSpeed = 2.5;
+    const mouseSensitivity = 0.002;
     const target = [0, 0, 0];
     const up = [0, 1, 0];
     const zNear = 0.1;
@@ -56,7 +56,6 @@ async function main() {
 
     window.addEventListener('mousemove', (e) => {
         if (document.pointerLockElement === canvas) {
-            // inverta o sinal aqui para yaw e veja o resultado
             cameraRotation.yaw -= e.movementX * mouseSensitivity;
             cameraRotation.pitch -= e.movementY * mouseSensitivity;
             cameraRotation.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.pitch));
@@ -70,7 +69,6 @@ async function main() {
     window.addEventListener('keyup', (e) => {
         keysPressed[e.key.toLowerCase()] = false;
     });
-
 
 
     canvas.addEventListener('click', () => {
@@ -99,7 +97,6 @@ async function main() {
     window.addEventListener('keydown', (e) => {
         keysPressed[e.key.toLowerCase()] = true;
 
-        // Toggle luzes com 1, 2, 3
         if (e.key === '1') lights.keyLight.on = !lights.keyLight.on;
         if (e.key === '2') lights.fillLight.on = !lights.fillLight.on;
         if (e.key === '3') lights.backLight.on = !lights.backLight.on;
@@ -136,7 +133,6 @@ async function main() {
             cameraPosition[2] -= forward[2] * movementSpeed * deltaTime;
         }
 
-        // Movimento para direita e esquerda (D e A)
         if (keysPressed['d']) {
             cameraPosition[0] += right[0] * movementSpeed * deltaTime;
             cameraPosition[2] += right[2] * movementSpeed * deltaTime;
@@ -180,23 +176,17 @@ async function main() {
             lightDirection: m4.normalize([-1, 3, 5]),
             view: view,
             projection: projection,
-            // world: m4.yRotation(time),
             world: m4.identity(),
             diffuse: [1, 0.7, 0.5, 1],
         });
         const mat = materials[mtlName] || {};
         setUniforms(gl, meshProgramInfo.program, {
-            // world: m4.yRotation(time),
             world: m4.identity(),
             diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
         });
 
-        // gl.activeTexture(gl.TEXTURE0);
-        // gl.bindTexture(gl.TEXTURE_2D, texture);
-        // gl.uniform1i(gl.getUniformLocation(meshProgramInfo.program, "textureSampler"), 0);
-
         setUniforms(gl, meshProgramInfo.program, {
-            lightDirection: m4.normalize([-1, 3, 5]), // Pode remover se não usar mais
+            lightDirection: m4.normalize([-1, 3, 5]),
             view: view,
             projection: projection,
             world: m4.identity(),
@@ -216,8 +206,6 @@ async function main() {
         });
 
 
-
-        // drawBufferInfo(gl, bufferInfo);
         for (const [materialName, indices] of Object.entries(data.materialGroups)) {
             const mat = materials[materialName] || {};
 
@@ -233,19 +221,6 @@ async function main() {
         }
 
         requestAnimationFrame(render);
-
-        // for (const [materialName, indices] of Object.entries(data.materialGroups)) {
-        //     const mat = materials[materialName] || {};
-        //
-        //     setUniforms(gl, meshProgramInfo.program, {
-        //         u_world: m4.yRotation(time),
-        //         u_diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
-        //     });
-        //
-        //     // drawBufferInfo se precisar de indices por material
-        //     drawBufferInfo(gl, bufferInfo, gl.TRIANGLES, indices.length);
-        // }
-
     }
 
     requestAnimationFrame(render);

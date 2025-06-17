@@ -34,7 +34,8 @@ async function main() {
     const bufferInfo = createVAOFromData(gl, data, meshProgramInfo.program);
 
 
-    const texture = loadTexture(gl, `../public/assets/tex/pixelWall.png`);
+    // const texture = loadTexture(gl, `../public/assets/tex/pixelWall.png`);
+    const texture = loadTexture(gl, `../public/assets/Modelos3D/Suzanne.png`);
 
     const cameraPosition = [0, 0, 4];
     let cameraRotation = {
@@ -112,21 +113,18 @@ async function main() {
 
 
     function updateCameraPosition(deltaTime) {
-        // Só no plano XZ, ignorando pitch
         const forward = [
             Math.sin(cameraRotation.yaw),
             0,
             Math.cos(cameraRotation.yaw),
         ];
 
-        // vetor para a direita (perpendicular ao forward)
         const right = [
             Math.sin(cameraRotation.yaw - Math.PI/2),
             0,
             Math.cos(cameraRotation.yaw - Math.PI/2),
         ];
 
-        // Movimento para frente e para trás (W e S)
         if (keysPressed['w']) {
             cameraPosition[0] += forward[0] * movementSpeed * deltaTime;
             cameraPosition[1] += forward[1] * movementSpeed * deltaTime;
@@ -177,9 +175,6 @@ async function main() {
         const view = m4.inverse(cameraMatrix);
 
 
-        // const camera = m4.lookAt(cameraPosition, target, up);
-        // const view = m4.inverse(camera);
-
         gl.useProgram(meshProgramInfo.program);
         setUniforms(gl, meshProgramInfo.program, {
             lightDirection: m4.normalize([-1, 3, 5]),
@@ -196,9 +191,9 @@ async function main() {
             diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
         });
 
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.uniform1i(gl.getUniformLocation(meshProgramInfo.program, "textureSampler"), 0);
+        // gl.activeTexture(gl.TEXTURE0);
+        // gl.bindTexture(gl.TEXTURE_2D, texture);
+        // gl.uniform1i(gl.getUniformLocation(meshProgramInfo.program, "textureSampler"), 0);
 
         setUniforms(gl, meshProgramInfo.program, {
             lightDirection: m4.normalize([-1, 3, 5]), // Pode remover se não usar mais
@@ -222,7 +217,21 @@ async function main() {
 
 
 
-        drawBufferInfo(gl, bufferInfo);
+        // drawBufferInfo(gl, bufferInfo);
+        for (const [materialName, indices] of Object.entries(data.materialGroups)) {
+            const mat = materials[materialName] || {};
+
+            setUniforms(gl, meshProgramInfo.program, {
+                diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
+            });
+
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, texture);  // use textura default ou material específica
+            gl.uniform1i(gl.getUniformLocation(meshProgramInfo.program, "textureSampler"), 0);
+
+            drawBufferInfo(gl, bufferInfo, gl.TRIANGLES, indices.length, 0, indices);
+        }
+
         requestAnimationFrame(render);
 
         // for (const [materialName, indices] of Object.entries(data.materialGroups)) {

@@ -36,6 +36,33 @@ async function main() {
 
 
     const texture = loadTexture(gl, objectData.tex);
+    let objectPosition = [0, 0, 0];
+    let selected = false;
+    let movePath = [];
+
+    function getForwardVector() {
+        return [
+            Math.cos(cameraRotation.pitch) * Math.sin(cameraRotation.yaw),
+            Math.sin(cameraRotation.pitch),
+            Math.cos(cameraRotation.pitch) * Math.cos(cameraRotation.yaw),
+        ];
+    }
+    function intersectsObject(camPos, dir, objPos, r = 1) {
+        const toObj = [
+            objPos[0] - camPos[0],
+            objPos[1] - camPos[1],
+            objPos[2] - camPos[2],
+        ];
+        const proj = toObj[0]*dir[0] + toObj[1]*dir[1] + toObj[2]*dir[2];
+        const closest = [
+            camPos[0] + dir[0]*proj,
+            camPos[1] + dir[1]*proj,
+            camPos[2] + dir[2]*proj,
+        ];
+        const dSq = (objPos[0]-closest[0])**2+(objPos[1]-closest[1])**2+(objPos[2]-closest[2])**2;
+        return dSq <= r*r;
+    }
+
 
     const cameraPosition = [0, 0, 4];
     let cameraRotation = {
@@ -72,7 +99,34 @@ async function main() {
 
 
     canvas.addEventListener('click', () => {
-      canvas.requestPointerLock();
+        canvas.requestPointerLock();
+    });
+
+    canvas.addEventListener('mousedown', () => {
+        const ray = getForwardVector();
+
+        if (!selected) {
+            if (intersectsObject(cameraPosition, ray, objectPosition, 1)) {
+                selected = true;
+            }
+        } else {
+            const dist = 10;
+            const target = [
+                cameraPosition[0] + ray[0]*dist,
+                cameraPosition[1] + ray[1]*dist,
+                cameraPosition[2] + ray[2]*dist,
+            ];
+            const steps = 60;
+            movePath.length = 0;
+            for (let i = 1; i <= steps; i++) {
+                movePath.push([
+                    objectPosition[0] + (target[0] - objectPosition[0]) * (i/steps),
+                    objectPosition[1] + (target[1] - objectPosition[1]) * (i/steps),
+                    objectPosition[2] + (target[2] - objectPosition[2]) * (i/steps),
+                ]);
+            }
+            selected = false;
+        }
     });
 
 
@@ -150,6 +204,10 @@ async function main() {
         lastTime = time;
 
         updateCameraPosition(deltaTime);
+        if (movePath.length > 0) {
+            objectPosition = movePath.shift();
+        }
+
 
 
         resizeCanvasToDisplaySize(gl.canvas);
@@ -176,12 +234,12 @@ async function main() {
             lightDirection: m4.normalize([-1, 3, 5]),
             view: view,
             projection: projection,
-            world: m4.identity(),
+            world: m4.translation(...objectPosition),
             diffuse: [1, 0.7, 0.5, 1],
         });
         const mat = materials[mtlName] || {};
         setUniforms(gl, meshProgramInfo.program, {
-            world: m4.identity(),
+            world: m4.translation(...objectPosition),
             diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
         });
 
@@ -189,7 +247,7 @@ async function main() {
             lightDirection: m4.normalize([-1, 3, 5]),
             view: view,
             projection: projection,
-            world: m4.identity(),
+            world: m4.translation(...objectPosition),
             diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
 
             keyLightPos: lights.keyLight.position,
@@ -211,10 +269,11 @@ async function main() {
 
             setUniforms(gl, meshProgramInfo.program, {
                 diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
+                world: m4.translation(...objectPosition),
             });
 
             gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, texture);  // use textura default ou material específica
+            gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.uniform1i(gl.getUniformLocation(meshProgramInfo.program, "textureSampler"), 0);
 
             drawBufferInfo(gl, bufferInfo, gl.TRIANGLES, indices.length, 0, indices);

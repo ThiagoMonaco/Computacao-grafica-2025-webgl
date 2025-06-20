@@ -30,44 +30,44 @@ export function updateCameraPosition(deltaTime) {
         Math.sin(cameraRotation.yaw),
         0,
         Math.cos(cameraRotation.yaw),
-    ];
+    ]
 
     const right = [
         Math.sin(cameraRotation.yaw - Math.PI/2),
         0,
         Math.cos(cameraRotation.yaw - Math.PI/2),
-    ];
+    ]
 
     if (keysPressed['w']) {
-        cameraPosition[0] += forward[0] * movementSpeed * deltaTime;
-        cameraPosition[1] += forward[1] * movementSpeed * deltaTime;
-        cameraPosition[2] += forward[2] * movementSpeed * deltaTime;
+        cameraPosition[0] += forward[0] * movementSpeed * deltaTime
+        cameraPosition[1] += forward[1] * movementSpeed * deltaTime
+        cameraPosition[2] += forward[2] * movementSpeed * deltaTime
     }
     if (keysPressed['s']) {
-        cameraPosition[0] -= forward[0] * movementSpeed * deltaTime;
-        cameraPosition[1] -= forward[1] * movementSpeed * deltaTime;
-        cameraPosition[2] -= forward[2] * movementSpeed * deltaTime;
+        cameraPosition[0] -= forward[0] * movementSpeed * deltaTime
+        cameraPosition[1] -= forward[1] * movementSpeed * deltaTime
+        cameraPosition[2] -= forward[2] * movementSpeed * deltaTime
     }
 
     if (keysPressed['d']) {
-        cameraPosition[0] += right[0] * movementSpeed * deltaTime;
-        cameraPosition[2] += right[2] * movementSpeed * deltaTime;
+        cameraPosition[0] += right[0] * movementSpeed * deltaTime
+        cameraPosition[2] += right[2] * movementSpeed * deltaTime
     }
     if (keysPressed['a']) {
-        cameraPosition[0] -= right[0] * movementSpeed * deltaTime;
-        cameraPosition[2] -= right[2] * movementSpeed * deltaTime;
+        cameraPosition[0] -= right[0] * movementSpeed * deltaTime
+        cameraPosition[2] -= right[2] * movementSpeed * deltaTime
     }
 }
 
 export function startCamera () {
-    const canvas = document.getElementById('canvas');
-    const { cameraRotation, mouseSensitivity } = cameraState;
+    const canvas = document.getElementById('canvas')
+    const { cameraRotation, mouseSensitivity } = cameraState
 
     window.addEventListener('mousemove', (e) => {
         if (document.pointerLockElement === canvas) {
-            cameraRotation.yaw -= e.movementX * mouseSensitivity;
-            cameraRotation.pitch -= e.movementY * mouseSensitivity;
-            cameraRotation.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.pitch));
+            cameraRotation.yaw -= e.movementX * mouseSensitivity
+            cameraRotation.pitch -= e.movementY * mouseSensitivity
+            cameraRotation.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.pitch))
         }
-    });
+    })
 }

@@ -1,4 +1,4 @@
-import { getKeys } from "../misc/keys";
+import { getKeys } from "../misc/keys"
 
 let lights = {
     keyLight: {
@@ -16,17 +16,17 @@ let lights = {
         color: [0.3, 0.3, 0.4],
         on: true
     }
-};
+}
 
 function startLights() {
     window.addEventListener('keydown', (e) => {
         const keysPressed = getKeys()
-        keysPressed[e.key.toLowerCase()] = true;
+        keysPressed[e.key.toLowerCase()] = true
 
-        if (e.key === '1') lights.keyLight.on = !lights.keyLight.on;
-        if (e.key === '2') lights.fillLight.on = !lights.fillLight.on;
-        if (e.key === '3') lights.backLight.on = !lights.backLight.on;
-    });
+        if (e.key === '1') lights.keyLight.on = !lights.keyLight.on
+        if (e.key === '2') lights.fillLight.on = !lights.fillLight.on
+        if (e.key === '3') lights.backLight.on = !lights.backLight.on
+    })
 }
 
 function getLights() {

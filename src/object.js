@@ -5,6 +5,7 @@ import { parseMTL } from './webgl/parsers/mtl-parser.js'
 import { loadTexture } from './webgl/texture.js'
 import { getObjectData } from './misc/obj-selector.js'
 import { ObjectTranslation } from './webgl/object-translation.js'
+import { translation } from './misc/math-utils.js'
 
 
 export async function startObject(obj, shader, meshProgramInfo, gl, initialPosition = [0, 0, 0]) {
@@ -35,7 +36,7 @@ export async function startObject(obj, shader, meshProgramInfo, gl, initialPosit
 
         const mat = materials[mtlName] || {}
         setUniforms(gl, meshProgramInfo.program, {
-            world: m4.translation(...objectPosition),
+            world: translation(...objectPosition),
             diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
         })
 
@@ -45,7 +46,7 @@ export async function startObject(obj, shader, meshProgramInfo, gl, initialPosit
 
             setUniforms(gl, meshProgramInfo.program, {
                 diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
-                world: m4.translation(...objectPosition),
+                world: translation(...objectPosition),
             })
 
             gl.activeTexture(gl.TEXTURE0)

@@ -5,6 +5,7 @@ import { getLights, startLights } from './webgl/lights.js'
 import { createProgramFromSources } from './webgl/shaders.js'
 import { setUniforms } from './webgl/uniforms.js'
 import { resizeCanvasToDisplaySize } from './webgl/utils.js'
+import { perspective, lookAt, inverse, identity, normalize } from './misc/math-utils.js'
 
 async function scene () {
     const canvas = document.querySelector("#canvas")
@@ -56,7 +57,7 @@ async function scene () {
         const { cameraPosition, cameraRotation, up, zFar, zNear } = getCameraState()
 
         const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight
-        const projection = m4.perspective(degToRad(60), aspect, zNear, zFar)
+        const projection = perspective(degToRad(60), aspect, zNear, zFar)
 
         const lookDirection = [
             cameraPosition[0] + Math.cos(cameraRotation.pitch) * Math.sin(cameraRotation.yaw),
@@ -64,23 +65,23 @@ async function scene () {
             cameraPosition[2] + Math.cos(cameraRotation.pitch) * Math.cos(cameraRotation.yaw),
         ]
 
-        const cameraMatrix = m4.lookAt(cameraPosition, lookDirection, up)
-        const view = m4.inverse(cameraMatrix)
+        const cameraMatrix = lookAt(cameraPosition, lookDirection, up)
+        const view = inverse(cameraMatrix)
 
         gl.useProgram(meshProgramInfo.program)
         setUniforms(gl, meshProgramInfo.program, {
-            lightDirection: m4.normalize([-1, 3, 5]),
+            lightDirection: normalize([-1, 3, 5]),
             view: view,
             projection: projection,
-            world: m4.identity(),
+            world: identity(),
             diffuse: [1, 0.7, 0.5, 1],
         })
 
         setUniforms(gl, meshProgramInfo.program, {
-            lightDirection: m4.normalize([-1, 3, 5]),
+            lightDirection: normalize([-1, 3, 5]),
             view: view,
             projection: projection,
-            world: m4.identity(),
+            world: identity(),
             diffuse: [1, 1, 1, 1],
 
             keyLightPos: lights.keyLight.position,

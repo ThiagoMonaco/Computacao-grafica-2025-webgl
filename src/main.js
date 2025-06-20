@@ -21,9 +21,9 @@ async function scene () {
 
 
     renderObject('suzanne', 'suzanne', [0, 5, 0]);
-    renderObject('cube', 'cube')
-    renderObject('cube', 'brick', [5, 0, 0]);
-    renderObject('suzanne', 'suzanne', [0, 5, 0])
+    // renderObject('cube', 'cube')
+    // renderObject('cube', 'brick', [5, 0, 0]);
+    // renderObject('suzanne', 'suzanne', [0, 5, 0])
 }
 
 scene()

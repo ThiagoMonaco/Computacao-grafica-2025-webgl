@@ -8,6 +8,7 @@ import { loadTexture } from './webgl/texture.js';
 import { getObjectData } from './misc/obj-selector.js';
 import { getKeys, startKeys } from './misc/keys.js';
 import { getCameraState, startCamera, updateCameraPosition } from './webgl/camera.js';
+import { getLights, startLights } from './webgl/lights.js';
 
 
 export async function renderObject(obj, shader, initialPosition = [0, 0, 0]) {
@@ -67,40 +68,9 @@ export async function renderObject(obj, shader, initialPosition = [0, 0, 0]) {
         return dSq <= r*r;
     }
 
-
-    // const cameraPosition = [0, 0, 10];
-    // let cameraRotation = {
-    //     yaw: Math.PI,
-    //     pitch: 0,
-    // };
-    // const movementSpeed = 2.5;
-    // const mouseSensitivity = 0.002;
-    // const target = [0, 0, 0];
-    // const up = [0, 1, 0];
-    // const zNear = 0.1;
-    // const zFar = 50;
-
-
-    // const keysPressed = {};
-
-    // window.addEventListener('mousemove', (e) => {
-    //     if (document.pointerLockElement === canvas) {
-    //         cameraRotation.yaw -= e.movementX * mouseSensitivity;
-    //         cameraRotation.pitch -= e.movementY * mouseSensitivity;
-    //         cameraRotation.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.pitch));
-    //     }
-    // });
-
-    // window.addEventListener('keydown', (e) => {
-    //     keysPressed[e.key.toLowerCase()] = true;
-    // });
-    //
-    // window.addEventListener('keyup', (e) => {
-    //     keysPressed[e.key.toLowerCase()] = false;
-    // });
-
     startKeys()
     startCamera()
+    startLights()
 
 
     canvas.addEventListener('click', () => {
@@ -108,7 +78,7 @@ export async function renderObject(obj, shader, initialPosition = [0, 0, 0]) {
     });
 
     canvas.addEventListener('mousedown', () => {
-        const { cameraPosition, cameraRotation, up } = getCameraState();
+        const { cameraPosition } = getCameraState();
         const ray = getForwardVector();
 
         if (!selected) {
@@ -136,87 +106,22 @@ export async function renderObject(obj, shader, initialPosition = [0, 0, 0]) {
     });
 
 
-    let lights = {
-        keyLight: {
-            position: [5, 10, 5],
-            color: [1.0, 0.95, 0.8],
-            on: true
-        },
-        fillLight: {
-            position: [-5, 5, 5],
-            color: [0.4, 0.4, 0.5],
-            on: true
-        },
-        backLight: {
-            position: [0, 5, -5],
-            color: [0.3, 0.3, 0.4],
-            on: true
-        }
-    };
-
-    window.addEventListener('keydown', (e) => {
-        const keysPressed = getKeys()
-        keysPressed[e.key.toLowerCase()] = true;
-
-        if (e.key === '1') lights.keyLight.on = !lights.keyLight.on;
-        if (e.key === '2') lights.fillLight.on = !lights.fillLight.on;
-        if (e.key === '3') lights.backLight.on = !lights.backLight.on;
-    });
-
-
-
     function degToRad(d) {
         return d * Math.PI / 180;
     }
-
-
-    // function updateCameraPosition(deltaTime) {
-    //     const forward = [
-    //         Math.sin(cameraRotation.yaw),
-    //         0,
-    //         Math.cos(cameraRotation.yaw),
-    //     ];
-    //
-    //     const right = [
-    //         Math.sin(cameraRotation.yaw - Math.PI/2),
-    //         0,
-    //         Math.cos(cameraRotation.yaw - Math.PI/2),
-    //     ];
-    //
-    //     if (keysPressed['w']) {
-    //         cameraPosition[0] += forward[0] * movementSpeed * deltaTime;
-    //         cameraPosition[1] += forward[1] * movementSpeed * deltaTime;
-    //         cameraPosition[2] += forward[2] * movementSpeed * deltaTime;
-    //     }
-    //     if (keysPressed['s']) {
-    //         cameraPosition[0] -= forward[0] * movementSpeed * deltaTime;
-    //         cameraPosition[1] -= forward[1] * movementSpeed * deltaTime;
-    //         cameraPosition[2] -= forward[2] * movementSpeed * deltaTime;
-    //     }
-    //
-    //     if (keysPressed['d']) {
-    //         cameraPosition[0] += right[0] * movementSpeed * deltaTime;
-    //         cameraPosition[2] += right[2] * movementSpeed * deltaTime;
-    //     }
-    //     if (keysPressed['a']) {
-    //         cameraPosition[0] -= right[0] * movementSpeed * deltaTime;
-    //         cameraPosition[2] -= right[2] * movementSpeed * deltaTime;
-    //     }
-    // }
 
     let lastTime = 0;
     function render(time) {
         time *= 0.001;
         const deltaTime = time - lastTime;
         lastTime = time;
+        const lights = getLights()
 
         updateCameraPosition(deltaTime);
         if (movePath.length > 0) {
             objectPosition = movePath.shift();
         }
         const { cameraPosition, cameraRotation, up, zFar, zNear } = getCameraState();
-
-
 
         resizeCanvasToDisplaySize(gl.canvas);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);

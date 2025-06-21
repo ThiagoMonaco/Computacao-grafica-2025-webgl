@@ -7,7 +7,7 @@ import { getObjectData } from './misc/obj-selector.js'
 import { ObjectTranslation } from './webgl/object-translation.js'
 import { mat4 } from 'gl-matrix'
 
-export async function startObject(obj, shader, meshProgramInfo, gl, initialPosition = [0, 0, 0], rotation = null) {
+export async function startObject(obj, shader, meshProgramInfo, gl, initialPosition = [0, 0, 0], rotation = [0,0,0], scale = [1, 1, 1]) {
     let objectData = getObjectData(obj, shader)
 
     const response = await fetch(objectData.obj)
@@ -49,9 +49,15 @@ export async function startObject(obj, shader, meshProgramInfo, gl, initialPosit
 
         if (rotation) {
             const rotationMatrix = mat4.create()
-            mat4.rotateX(rotationMatrix, rotationMatrix, Math.PI / 2)
-            worldMatrix = mat4.multiply(mat4.create(), translationMatrix, rotationMatrix)
+            mat4.rotateX(rotationMatrix, rotationMatrix, rotation[0])
+            mat4.rotateY(rotationMatrix, rotationMatrix, rotation[1])
+            mat4.rotateZ(rotationMatrix, rotationMatrix, rotation[2])
+            worldMatrix = mat4.multiply(mat4.create(), worldMatrix, rotationMatrix)
         }
+
+        const scaleMatrix = mat4.create()
+        mat4.scale(scaleMatrix, scaleMatrix, scale)
+        worldMatrix = mat4.multiply(mat4.create(), worldMatrix, scaleMatrix)
 
         const mat = materials[mtlName] || {}
         setUniforms(gl, meshProgramInfo.program, {

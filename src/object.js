@@ -5,10 +5,10 @@ import { parseMTL } from './webgl/parsers/mtl-parser.js'
 import { loadTexture } from './webgl/texture.js'
 import { getObjectData } from './misc/obj-selector.js'
 import { ObjectTranslation } from './webgl/object-translation.js'
-import { translation } from './misc/math-utils.js'
+import { multiply, translation, xRotation } from './misc/math-utils.js'
 
 
-export async function startObject(obj, shader, meshProgramInfo, gl, initialPosition = [0, 0, 0]) {
+export async function startObject(obj, shader, meshProgramInfo, gl, initialPosition = [0, 0, 0], rotation = null) {
     let objectData = getObjectData(obj, shader)
 
     const response = await fetch(objectData.obj)
@@ -26,6 +26,7 @@ export async function startObject(obj, shader, meshProgramInfo, gl, initialPosit
 
     const objectTranslation = new ObjectTranslation(initialPosition)
 
+
     function renderObject() {
         const { movePath, objectPosition } = objectTranslation
 
@@ -33,10 +34,16 @@ export async function startObject(obj, shader, meshProgramInfo, gl, initialPosit
             const newObjectPosition = movePath.shift()
             objectTranslation.setObjectPosition(newObjectPosition)
         }
+        const rotationMatrix = xRotation(Math.PI / 2)
+        const translationMatrix = translation(...objectPosition)
+        let worldMatrix = translationMatrix
+        if(rotation) {
+            worldMatrix = multiply(translationMatrix, rotationMatrix)
+        } 
 
         const mat = materials[mtlName] || {}
         setUniforms(gl, meshProgramInfo.program, {
-            world: translation(...objectPosition),
+            world: worldMatrix, 
             diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
         })
 
@@ -46,7 +53,7 @@ export async function startObject(obj, shader, meshProgramInfo, gl, initialPosit
 
             setUniforms(gl, meshProgramInfo.program, {
                 diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
-                world: translation(...objectPosition),
+                world: worldMatrix, 
             })
 
             gl.activeTexture(gl.TEXTURE0)

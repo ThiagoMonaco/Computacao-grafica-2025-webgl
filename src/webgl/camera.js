@@ -1,12 +1,12 @@
 import { getKeys } from "../misc/keys"
 
 let cameraState = {
-    cameraPosition: [0, 0, 10],
+    cameraPosition: [0, 2, 10],
     cameraRotation: {
         yaw: Math.PI,
         pitch: 0,
     },
-    movementSpeed: 2.5,
+    movementSpeed: 5,
     mouseSensitivity: 0.002,
     up: [0, 1, 0],
     zFar: 50,

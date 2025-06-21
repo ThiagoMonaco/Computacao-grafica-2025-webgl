@@ -8,6 +8,8 @@ export function parseOBJ(text) {
     const materialsLibs = []
     const materialGroups = {}
 
+    const tempVertices = [] // Para geração de normais manual
+
     function addVertex(vert) {
         const ptn = vert.split('/')
         ptn.forEach((objIndexStr, i) => {
@@ -20,37 +22,60 @@ export function parseOBJ(text) {
 
     const lines = text.split('\n')
     const keywordRE = /(\w*)(?: )*(.*)/
+
     const keywords = {
         v(parts) { objPositions.push(parts.map(parseFloat)) },
         vn(parts) { objNormals.push(parts.map(parseFloat)) },
         vt(parts) { objTexcoords.push(parts.map(parseFloat)) },
-        f(parts) {
-            const n = parts.length - 2
-            for (let i = 0; i < n; ++i) {
-                addVertex(parts[0])
-                addVertex(parts[i + 1])
-                addVertex(parts[i + 2])
-            }
-        },
-        mtllib(parts) {
-            materialsLibs.push(parts[0]) // Ex: ['cube.mtl']
-        },
         usemtl(parts) {
             currentMaterial = parts[0]
         },
+        mtllib(parts) {
+            materialsLibs.push(parts[0])
+        },
         f(parts) {
-            const numTriangles = parts.length - 2
-            for (let tri = 0; tri < numTriangles; ++tri) {
-                addVertex(parts[0])
-                addVertex(parts[tri + 1])
-                addVertex(parts[tri + 2])
+            const n = parts.length - 2
+            for (let i = 0; i < n; ++i) {
+                const verts = [parts[0], parts[i + 1], parts[i + 2]]
+                verts.forEach(addVertex)
 
                 if (!materialGroups[currentMaterial]) {
                     materialGroups[currentMaterial] = []
                 }
-                materialGroups[currentMaterial].push(webglVertexData[0].length / 3 - 3)
-                materialGroups[currentMaterial].push(webglVertexData[0].length / 3 - 2)
-                materialGroups[currentMaterial].push(webglVertexData[0].length / 3 - 1)
+
+                const baseIndex = webglVertexData[0].length / 3 - 3
+                materialGroups[currentMaterial].push(baseIndex, baseIndex + 1, baseIndex + 2)
+
+                // Geração de normais se necessário
+                if (objNormals.length <= 1) {
+                    const getPos = idx =>
+                        webglVertexData[0].slice(idx * 3, idx * 3 + 3)
+
+                    const p0 = getPos(baseIndex)
+                    const p1 = getPos(baseIndex + 1)
+                    const p2 = getPos(baseIndex + 2)
+
+                    const u = [
+                        p1[0] - p0[0],
+                        p1[1] - p0[1],
+                        p1[2] - p0[2],
+                    ]
+                    const v = [
+                        p2[0] - p0[0],
+                        p2[1] - p0[1],
+                        p2[2] - p0[2],
+                    ]
+
+                    // cross product u x v
+                    const nx = u[1] * v[2] - u[2] * v[1]
+                    const ny = u[2] * v[0] - u[0] * v[2]
+                    const nz = u[0] * v[1] - u[1] * v[0]
+
+                    const length = Math.hypot(nx, ny, nz) || 1
+                    const normal = [nx / length, ny / length, nz / length]
+
+                    webglVertexData[2].push(...normal, ...normal, ...normal)
+                }
             }
         },
     }

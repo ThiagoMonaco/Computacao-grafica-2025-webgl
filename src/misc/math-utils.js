@@ -1,5 +1,29 @@
 let MatType = Float32Array 
 
+function scaling(sx, sy, sz) {
+  return new Float32Array([
+    sx, 0,  0,  0,
+    0,  sy, 0,  0,
+    0,  0,  sz, 0,
+    0,  0,  0,  1,
+  ])
+}
+
+function multiply(a, b) {
+  const out = new Float32Array(16)
+  for (let i = 0; i < 4; ++i) {
+    for (let j = 0; j < 4; ++j) {
+      out[j * 4 + i] =
+        a[0 * 4 + i] * b[j * 4 + 0] +
+        a[1 * 4 + i] * b[j * 4 + 1] +
+        a[2 * 4 + i] * b[j * 4 + 2] +
+        a[3 * 4 + i] * b[j * 4 + 3]
+    }
+  }
+  return out
+}
+
+
 function identity(dst) {
     dst = dst || new MatType(16)
 
@@ -211,6 +235,18 @@ function perspective(fieldOfViewInRadians, aspect, near, far, dst) {
     return dst
 }
 
+function xRotation(angleInRadians) {
+    const c = Math.cos(angleInRadians)
+    const s = Math.sin(angleInRadians)
+
+    return [
+        1, 0, 0, 0,
+        0, c, s, 0,
+        0, -s, c, 0,
+        0, 0, 0, 1,
+    ]
+}
+
 
 export {
     identity,
@@ -218,5 +254,8 @@ export {
     normalize,
     inverse,
     lookAt,
-    perspective
+    perspective,
+    multiply,
+    scaling,
+    xRotation
 }

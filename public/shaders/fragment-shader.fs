@@ -6,6 +6,7 @@ in vec2 texcoordInterp;
 in vec3 fragPos;
 
 uniform vec4 diffuse;
+uniform bool useTexture; // <=== NOVO
 
 uniform vec3 keyLightPos;
 uniform vec3 fillLightPos;
@@ -32,7 +33,9 @@ vec3 calcLight(vec3 lightPos, vec3 lightColor) {
 
 void main() {
     vec3 norm = normalize(normalInterp);
-    vec4 texColor = texture(textureSampler, texcoordInterp);
+    
+    // Usa textura se estiver habilitado
+    vec4 texColor = useTexture ? texture(textureSampler, texcoordInterp) : vec4(1.0);
 
     vec3 color = vec3(0.0);
 
@@ -46,9 +49,9 @@ void main() {
         color += calcLight(backLightPos, backLightColor);
     }
 
-    color = color * diffuse.rgb * texColor.rgb;
+    vec3 baseColor = diffuse.rgb * texColor.rgb;
+    float alpha = diffuse.a * texColor.a;
 
-    float alpha = texColor.a * diffuse.a;
-    outColor = vec4(color, alpha);
+    outColor = vec4(color * baseColor, alpha);
 }
 

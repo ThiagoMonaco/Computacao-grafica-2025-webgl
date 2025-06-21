@@ -4,11 +4,22 @@ export function parseOBJ(text) {
     const objNormals = [[0, 0, 0]]
     const objVertexData = [objPositions, objTexcoords, objNormals]
     const webglVertexData = [[], [], []]
+
     let currentMaterial = 'default'
+    let currentObject = 'default'
+    let currentGroup = 'default'
+    let currentSmoothing = 'off'
+
     const materialsLibs = []
     const materialGroups = {}
+    const objectGroups = {}
+    const groupGroups = {}
+    const smoothingGroups = {}
 
-    const tempVertices = [] // Para geração de normais manual
+    function addToGroup(groupMap, key, baseIndex) {
+        if (!groupMap[key]) groupMap[key] = []
+        groupMap[key].push(baseIndex, baseIndex + 1, baseIndex + 2)
+    }
 
     function addVertex(vert) {
         const ptn = vert.split('/')
@@ -27,26 +38,24 @@ export function parseOBJ(text) {
         v(parts) { objPositions.push(parts.map(parseFloat)) },
         vn(parts) { objNormals.push(parts.map(parseFloat)) },
         vt(parts) { objTexcoords.push(parts.map(parseFloat)) },
-        usemtl(parts) {
-            currentMaterial = parts[0]
-        },
-        mtllib(parts) {
-            materialsLibs.push(parts[0])
-        },
+        usemtl(parts) { currentMaterial = parts[0] },
+        mtllib(parts) { materialsLibs.push(parts[0]) },
+        o(parts) { currentObject = parts[0] || 'unnamed' },
+        g(parts) { currentGroup = parts[0] || 'unnamed' },
+        s(parts) { currentSmoothing = parts[0] || 'off' },
         f(parts) {
             const n = parts.length - 2
             for (let i = 0; i < n; ++i) {
                 const verts = [parts[0], parts[i + 1], parts[i + 2]]
                 verts.forEach(addVertex)
 
-                if (!materialGroups[currentMaterial]) {
-                    materialGroups[currentMaterial] = []
-                }
-
                 const baseIndex = webglVertexData[0].length / 3 - 3
-                materialGroups[currentMaterial].push(baseIndex, baseIndex + 1, baseIndex + 2)
 
-                // Geração de normais se necessário
+                addToGroup(materialGroups, currentMaterial, baseIndex)
+                addToGroup(objectGroups, currentObject, baseIndex)
+                addToGroup(groupGroups, currentGroup, baseIndex)
+                addToGroup(smoothingGroups, currentSmoothing, baseIndex)
+
                 if (objNormals.length <= 1) {
                     const getPos = idx =>
                         webglVertexData[0].slice(idx * 3, idx * 3 + 3)
@@ -55,25 +64,15 @@ export function parseOBJ(text) {
                     const p1 = getPos(baseIndex + 1)
                     const p2 = getPos(baseIndex + 2)
 
-                    const u = [
-                        p1[0] - p0[0],
-                        p1[1] - p0[1],
-                        p1[2] - p0[2],
-                    ]
-                    const v = [
-                        p2[0] - p0[0],
-                        p2[1] - p0[1],
-                        p2[2] - p0[2],
-                    ]
+                    const u = [p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]]
+                    const v = [p2[0] - p0[0], p2[1] - p0[1], p2[2] - p0[2]]
 
-                    // cross product u x v
                     const nx = u[1] * v[2] - u[2] * v[1]
                     const ny = u[2] * v[0] - u[0] * v[2]
                     const nz = u[0] * v[1] - u[1] * v[0]
 
                     const length = Math.hypot(nx, ny, nz) || 1
                     const normal = [nx / length, ny / length, nz / length]
-
                     webglVertexData[2].push(...normal, ...normal, ...normal)
                 }
             }
@@ -99,8 +98,11 @@ export function parseOBJ(text) {
         position: webglVertexData[0],
         texcoord: webglVertexData[1],
         normal: webglVertexData[2],
-        materialGroups,
         materialsLibs,
+        materialGroups,
+        objectGroups,
+        groupGroups,
+        smoothingGroups,
     }
 }
 

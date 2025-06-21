@@ -37,11 +37,19 @@ async function scene () {
     const objects = [
         await startObject('grass', 'grass', meshProgramInfo, gl, [0, 0, 0], [0,0,0]),
         await startObject('suzanne', 'suzanne', meshProgramInfo, gl, [0, 5, 0]),
-        // await startObject('cube', 'cube', meshProgramInfo, gl),
+        await startObject('boomerang', null, meshProgramInfo, gl, [0, 0, 5]),
         await startObject('cube', 'brick', meshProgramInfo, gl, [5, 0, 0]),
     ]
 
     let lastTime = 0
+
+    gl.enable(gl.BLEND)
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+    gl.depthMask(true)
+    gl.frontFace(gl.CCW)
+    gl.enable(gl.DEPTH_TEST)
+
+
     function render(time) {
         time *= 0.001
         const deltaTime = time - lastTime
@@ -52,8 +60,6 @@ async function scene () {
 
         resizeCanvasToDisplaySize(gl.canvas)
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-        gl.enable(gl.DEPTH_TEST)
-        gl.enable(gl.CULL_FACE)
 
         const { cameraPosition, cameraRotation, up, zFar, zNear } = getCameraState()
 

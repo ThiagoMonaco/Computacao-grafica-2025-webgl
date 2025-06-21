@@ -35,9 +35,9 @@ async function scene () {
     }
 
     const objects = [
-        await startObject('grass', 'grass', meshProgramInfo, gl, [0,0,0], [Math.PI/2, 0, 0]),
-        await startObject('suzanne', 'suzanne', meshProgramInfo, gl, [0, 5, 0]),
-        await startObject('boomerang', null, meshProgramInfo, gl, [0, 3, 5], [0,0,0], [0.1,0.1,0.1]),
+        await startObject('grass', 'grass', meshProgramInfo, gl,false, [0,0,0], [degToRad(90), degToRad(0), degToRad(0)]),
+        await startObject('suzanne', 'suzanne', meshProgramInfo, gl,true, [0, 5, 0]),
+        await startObject('boomerang', null, meshProgramInfo, gl, true, [0, 1, 5], [0,0,0], [0.1,0.1,0.1]),
         await startObject('cube', 'brick', meshProgramInfo, gl, [5, 0, 0]),
     ]
 

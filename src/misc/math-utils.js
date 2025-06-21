@@ -247,6 +247,59 @@ function xRotation(angleInRadians) {
     ]
 }
 
+function rayIntersectsTriangle(orig, dir, v0, v1, v2) {
+    const EPSILON = 1e-8
+    const edge1 = [
+        v1[0] - v0[0],
+        v1[1] - v0[1],
+        v1[2] - v0[2],
+    ]
+    const edge2 = [
+        v2[0] - v0[0],
+        v2[1] - v0[1],
+        v2[2] - v0[2],
+    ]
+
+    const h = [
+        dir[1] * edge2[2] - dir[2] * edge2[1],
+        dir[2] * edge2[0] - dir[0] * edge2[2],
+        dir[0] * edge2[1] - dir[1] * edge2[0],
+    ]
+    const a = edge1[0] * h[0] + edge1[1] * h[1] + edge1[2] * h[2]
+
+    if (a > -EPSILON && a < EPSILON) return null
+
+    const f = 1 / a
+    const s = [
+        orig[0] - v0[0],
+        orig[1] - v0[1],
+        orig[2] - v0[2],
+    ]
+    const u = f * (s[0] * h[0] + s[1] * h[1] + s[2] * h[2])
+    if (u < 0 || u > 1) return null
+
+    const q = [
+        s[1] * edge1[2] - s[2] * edge1[1],
+        s[2] * edge1[0] - s[0] * edge1[2],
+        s[0] * edge1[1] - s[1] * edge1[0],
+    ]
+    const v = f * (dir[0] * q[0] + dir[1] * q[1] + dir[2] * q[2])
+    if (v < 0 || u + v > 1) return null
+
+    const t = f * (edge2[0] * q[0] + edge2[1] * q[1] + edge2[2] * q[2])
+    if (t > EPSILON) {
+        return {
+            t,
+            intersection: [
+                orig[0] + dir[0] * t,
+                orig[1] + dir[1] * t,
+                orig[2] + dir[2] * t,
+            ],
+            u, v,
+        }
+    }
+    return null
+}
 
 export {
     identity,
@@ -257,5 +310,6 @@ export {
     perspective,
     multiply,
     scaling,
-    xRotation
+    xRotation,
+    rayIntersectsTriangle,
 }

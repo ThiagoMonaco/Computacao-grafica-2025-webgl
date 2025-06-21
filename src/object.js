@@ -7,7 +7,7 @@ import { getObjectData } from './misc/obj-selector.js'
 import { ObjectTranslation } from './webgl/object-translation.js'
 import { mat4 } from 'gl-matrix'
 
-export async function startObject(obj, shader, meshProgramInfo, gl, initialPosition = [0, 0, 0], rotation = [0,0,0], scale = [1, 1, 1]) {
+export async function startObject(obj, shader, meshProgramInfo, gl, canTranslate = false, initialPosition = [0, 0, 0], rotation = [0,0,0], scale = [1, 1, 1]) {
     let objectData = getObjectData(obj, shader)
 
     const response = await fetch(objectData.obj)
@@ -20,8 +20,43 @@ export async function startObject(obj, shader, meshProgramInfo, gl, initialPosit
     const materials = parseMTL(mtlText)
 
     const texture = loadTexture(gl, objectData.tex)
+    const position = data.position // flat array [x0,y0,z0, x1,y1,z1, ...]
+    const triangles = []
 
-    const objectTranslation = new ObjectTranslation(initialPosition)
+    for (const indices of Object.values(data.materialGroups)) {
+        for (let i = 0; i < indices.length; i += 3) {
+            const i0 = indices[i]
+            const i1 = indices[i + 1]
+            const i2 = indices[i + 2]
+
+            const v0 = [
+                position[i0 * 3 + 0],
+                position[i0 * 3 + 1],
+                position[i0 * 3 + 2],
+            ]
+            const v1 = [
+                position[i1 * 3 + 0],
+                position[i1 * 3 + 1],
+                position[i1 * 3 + 2],
+            ]
+            const v2 = [
+                position[i2 * 3 + 0],
+                position[i2 * 3 + 1],
+                position[i2 * 3 + 2],
+            ]
+
+            // Só adiciona se não tiver undefined
+            if (v0.every(n => n !== undefined) && v1.every(n => n !== undefined) && v2.every(n => n !== undefined)) {
+                triangles.push([v0, v1, v2])
+            }
+        }
+    }
+    let objectTranslation = {}
+    if (canTranslate) {
+        objectTranslation = new ObjectTranslation(initialPosition, scale, triangles)
+    }
+
+
 
     const vaosByMaterial = {}
 
@@ -35,7 +70,11 @@ export async function startObject(obj, shader, meshProgramInfo, gl, initialPosit
 
 
     function renderObject() {
-        const { movePath, objectPosition } = objectTranslation
+        let { movePath, objectPosition } = objectTranslation
+        if (!canTranslate) {
+            movePath = []
+            objectPosition = initialPosition
+        }
 
         if (movePath.length > 0) {
             const newObjectPosition = movePath.shift()

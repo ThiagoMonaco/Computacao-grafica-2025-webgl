@@ -1,23 +1,40 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./src/style.css" />
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app">
-      <canvas id="canvas"></canvas>
-      <div id="crosshair">+</div>
-      <div id="controls">
-        <p>WASD = Move</p>
-        <p>1,2,3 = toggle lights</p>
-        <p>Click with mouse to move camera (esc to quit it)</p>
-        <p>To move the object, click on it one time and then click to the target position, the object will move to the target position</p>
-      </div>
-    
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./src/style.css" />
+        <title>Vite App</title>
+    </head>
+    <body>
+        <div id="app">
+            <canvas id="canvas"></canvas>
+            <div id="crosshair">+</div>
+            <div id="controls">
+                <p>WASD = Move</p>
+                <p>1,2,3 = toggle lights</p>
+                <p>Click with mouse to move camera (esc to quit it)</p>
+                <p>To move the object, click on it one time and then click to the target position, the object will move to the target position</p>
+            </div>
+            <div id="interactionPrompt" style="
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, 100px);
+                color: white;
+                font-family: sans-serif;
+                font-size: 20px;
+                background: rgba(0, 0, 0, 0.4);
+                padding: 8px 16px;
+                border-radius: 8px;
+                pointer-events: none;
+                display: none;
+                z-index: 9999;
+                ">
+                [E] Segurar objeto
+            </div>
+   
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>

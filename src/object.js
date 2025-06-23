@@ -4,11 +4,15 @@ import { parseOBJ } from './webgl/parsers/obj-parser.js'
 import { parseMTL } from './webgl/parsers/mtl-parser.js'
 import { loadTexture } from './webgl/texture.js'
 import { getObjectData } from './misc/obj-selector.js'
-import { ObjectTranslation } from './webgl/object-translation.js'
-import { mat4 } from 'gl-matrix'
+import { ObjectTranslation } from './webgl/interaction-handlers/object-translation.js'
+import { ObjectHoldable } from './webgl/interaction-handlers/object-holder.js'
+import { DefaultInteractionHandler } from './webgl/interaction-handlers/default-interaction-handler.js'
+import { getTriangles } from './webgl/triangles.js'
 
-export async function startObject(obj, shader, meshProgramInfo, gl, canTranslate = false, initialPosition = [0, 0, 0], rotation = [0,0,0], scale = [1, 1, 1]) {
-    let objectData = getObjectData(obj, shader)
+let lastId = 0
+export async function startObject(obj, shader, meshProgramInfo, gl, interactionMode = null, initialPosition = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1]) {
+    const objectData = getObjectData(obj, shader)
+    const id = lastId++
 
     const response = await fetch(objectData.obj)
     const text = await response.text()
@@ -20,46 +24,22 @@ export async function startObject(obj, shader, meshProgramInfo, gl, canTranslate
     const materials = parseMTL(mtlText)
 
     const texture = loadTexture(gl, objectData.tex)
-    const position = data.position // flat array [x0,y0,z0, x1,y1,z1, ...]
-    const triangles = []
+    const position = data.position
+    const triangles = getTriangles(data.materialGroups, position)
 
-    for (const indices of Object.values(data.materialGroups)) {
-        for (let i = 0; i < indices.length; i += 3) {
-            const i0 = indices[i]
-            const i1 = indices[i + 1]
-            const i2 = indices[i + 2]
-
-            const v0 = [
-                position[i0 * 3 + 0],
-                position[i0 * 3 + 1],
-                position[i0 * 3 + 2],
-            ]
-            const v1 = [
-                position[i1 * 3 + 0],
-                position[i1 * 3 + 1],
-                position[i1 * 3 + 2],
-            ]
-            const v2 = [
-                position[i2 * 3 + 0],
-                position[i2 * 3 + 1],
-                position[i2 * 3 + 2],
-            ]
-
-            // Só adiciona se não tiver undefined
-            if (v0.every(n => n !== undefined) && v1.every(n => n !== undefined) && v2.every(n => n !== undefined)) {
-                triangles.push([v0, v1, v2])
-            }
-        }
+    let interactionHandler = new DefaultInteractionHandler(id, initialPosition, scale, triangles, rotation)
+    switch (interactionMode) {
+        case 'translate':
+            interactionHandler = new ObjectTranslation(id, initialPosition, scale, triangles, rotation)
+            break
+        case 'hold':
+            interactionHandler = new ObjectHoldable(id, initialPosition, scale, triangles)
+            break
+        default:
+            interactionHandler = new DefaultInteractionHandler(id, initialPosition, scale, triangles, rotation)
     }
-    let objectTranslation = {}
-    if (canTranslate) {
-        objectTranslation = new ObjectTranslation(initialPosition, scale, triangles)
-    }
-
-
 
     const vaosByMaterial = {}
-
     for (const [materialName, indices] of Object.entries(data.materialGroups)) {
         vaosByMaterial[materialName] = createVAOFromData(gl, {
             position: data.position,
@@ -68,35 +48,9 @@ export async function startObject(obj, shader, meshProgramInfo, gl, canTranslate
         }, meshProgramInfo.program, indices)
     }
 
-
     function renderObject() {
-        let { movePath, objectPosition } = objectTranslation
-        if (!canTranslate) {
-            movePath = []
-            objectPosition = initialPosition
-        }
-
-        if (movePath.length > 0) {
-            const newObjectPosition = movePath.shift()
-            objectTranslation.setObjectPosition(newObjectPosition)
-        }
-
-        const translationMatrix = mat4.create()
-        mat4.translate(translationMatrix, translationMatrix, objectPosition)
-
-        let worldMatrix = translationMatrix
-
-        if (rotation) {
-            const rotationMatrix = mat4.create()
-            mat4.rotateX(rotationMatrix, rotationMatrix, rotation[0])
-            mat4.rotateY(rotationMatrix, rotationMatrix, rotation[1])
-            mat4.rotateZ(rotationMatrix, rotationMatrix, rotation[2])
-            worldMatrix = mat4.multiply(mat4.create(), worldMatrix, rotationMatrix)
-        }
-
-        const scaleMatrix = mat4.create()
-        mat4.scale(scaleMatrix, scaleMatrix, scale)
-        worldMatrix = mat4.multiply(mat4.create(), worldMatrix, scaleMatrix)
+        interactionHandler.handleObjectPosition()
+        let worldMatrix = interactionHandler.getWorldMatrix()
 
         const mat = materials[mtlName] || {}
         setUniforms(gl, meshProgramInfo.program, {
@@ -107,7 +61,6 @@ export async function startObject(obj, shader, meshProgramInfo, gl, canTranslate
 
         for (const [materialName] of Object.entries(data.materialGroups)) {
             const mat = materials[materialName] || {}
-
             setUniforms(gl, meshProgramInfo.program, {
                 diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
                 world: worldMatrix,
@@ -124,6 +77,10 @@ export async function startObject(obj, shader, meshProgramInfo, gl, canTranslate
         }
     }
 
-    return { renderObject }
+    return {
+        renderObject,
+        interactionHandler,
+        interactionMode
+    }
 }
 

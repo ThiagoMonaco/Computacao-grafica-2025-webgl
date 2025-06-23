@@ -14,10 +14,8 @@ async function scene () {
 
     let vs = await fetch('../public/shaders/vertex-shader.vs')
     let fs = await fetch('../public/shaders/fragment-shader.fs')
-
     vs = await vs.text()
     fs = await fs.text()
-
 
     const meshProgramInfo = createProgramFromSources(gl, [vs, fs])
 
@@ -29,26 +27,23 @@ async function scene () {
         canvas.requestPointerLock()
     })
 
-
     function degToRad(d) {
         return d * Math.PI / 180
     }
 
     const objects = [
-        await startObject('grass', 'grass', meshProgramInfo, gl,false, [0,0,0], [degToRad(90), degToRad(0), degToRad(0)]),
-        await startObject('suzanne', 'suzanne', meshProgramInfo, gl,true, [0, 5, 0]),
-        await startObject('boomerang', null, meshProgramInfo, gl, true, [0, 1, 5], [0,0,0], [0.1,0.1,0.1]),
-        await startObject('cube', 'brick', meshProgramInfo, gl, [5, 0, 0]),
+        await startObject('grass', 'grass', meshProgramInfo, gl, null, [0, 0, 0], [degToRad(90), 0, 0]),
+        await startObject('suzanne', 'suzanne', meshProgramInfo, gl, 'translate', [0, 5, 0]),
+        await startObject('boomerang', null, meshProgramInfo, gl, 'hold', [0, 1, 5], [0, 0, 0], [0.1, 0.1, 0.1]),
+        await startObject('cube', 'brick', meshProgramInfo, gl, 'hold', [5, 0, 0]),
     ]
 
     let lastTime = 0
-
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
     gl.depthMask(true)
     gl.frontFace(gl.CCW)
     gl.enable(gl.DEPTH_TEST)
-
 
     function render(time) {
         time *= 0.001
@@ -57,12 +52,10 @@ async function scene () {
         const lights = getLights()
 
         updateCameraPosition(deltaTime)
-
         resizeCanvasToDisplaySize(gl.canvas)
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 
         const { cameraPosition, cameraRotation, up, zFar, zNear } = getCameraState()
-
         const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight
         const projection = perspective(degToRad(60), aspect, zNear, zFar)
 
@@ -78,16 +71,8 @@ async function scene () {
         gl.useProgram(meshProgramInfo.program)
         setUniforms(gl, meshProgramInfo.program, {
             lightDirection: normalize([-1, 3, 5]),
-            view: view,
-            projection: projection,
-            world: identity(),
-            diffuse: [1, 0.7, 0.5, 1],
-        })
-
-        setUniforms(gl, meshProgramInfo.program, {
-            lightDirection: normalize([-1, 3, 5]),
-            view: view,
-            projection: projection,
+            view,
+            projection,
             world: identity(),
             diffuse: [1, 1, 1, 1],
 
@@ -107,9 +92,12 @@ async function scene () {
         for (const ob of objects) {
             ob.renderObject()
         }
+
         requestAnimationFrame(render)
     }
+
     requestAnimationFrame(render)
 }
 
 scene()
+

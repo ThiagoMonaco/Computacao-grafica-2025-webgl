@@ -1,9 +1,9 @@
 import { mat4 } from "gl-matrix"
-import { rayIntersectsTriangle } from "../misc/math-utils.js"
-import { getCameraState } from "./camera.js"
+import { rayIntersectsTriangle } from "../../misc/math-utils.js"
+import { getCameraState } from "../camera.js"
 import { DefaultInteractionHandler } from "./default-interaction-handler.js"
-import { setSightMessage } from "./sight.js"
-import { getKeys } from "../misc/keys.js"
+import { setSightMessage } from "../sight.js"
+import { getKeys } from "../../misc/keys.js"
 
 class ObjectHoldable {
     constructor(objectId, initialPosition, scale = [1, 1, 1], triangles = []) {

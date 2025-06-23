@@ -1,6 +1,6 @@
 import { mat4 } from "gl-matrix"
-import { rayIntersectsTriangle } from "../misc/math-utils.js"
-import { getCameraState } from "./camera.js"
+import { rayIntersectsTriangle } from "../../misc/math-utils.js"
+import { getCameraState } from "../camera.js"
 
 class ObjectTranslation {
     constructor(objectId, initialPosition, scale = [1, 1, 1], triangles = [], rotation) {

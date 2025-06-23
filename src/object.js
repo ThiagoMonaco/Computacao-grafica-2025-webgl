@@ -4,9 +4,9 @@ import { parseOBJ } from './webgl/parsers/obj-parser.js'
 import { parseMTL } from './webgl/parsers/mtl-parser.js'
 import { loadTexture } from './webgl/texture.js'
 import { getObjectData } from './misc/obj-selector.js'
-import { ObjectTranslation } from './webgl/object-translation.js'
-import { ObjectHoldable } from './webgl/object-holder.js'
-import { DefaultInteractionHandler } from './webgl/default-interaction-handler.js'
+import { ObjectTranslation } from './webgl/interaction-handlers/object-translation.js'
+import { ObjectHoldable } from './webgl/interaction-handlers/object-holder.js'
+import { DefaultInteractionHandler } from './webgl/interaction-handlers/default-interaction-handler.js'
 import { getTriangles } from './webgl/triangles.js'
 
 let lastId = 0

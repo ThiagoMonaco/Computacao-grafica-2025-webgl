@@ -39,25 +39,6 @@ async function scene () {
     ]
 
     let lastTime = 0
-    let isEPressed = false
-    let heldObject = null
-
-    window.addEventListener('keydown', e => {
-        if (e.key.toLowerCase() === 'e') isEPressed = true
-    })
-
-    window.addEventListener('keyup', e => {
-        if (e.key.toLowerCase() === 'e') isEPressed = false
-    })
-
-    window.addEventListener('mousedown', e => {
-    if (e.button === 0 && heldObject) {
-        heldObject.throwBoomerang()
-        heldObject = null
-    }
-})
-
-
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
     gl.depthMask(true)
@@ -108,41 +89,9 @@ async function scene () {
             backLightOn: Number(lights.backLight.on),
         })
 
-        const promptEl = document.getElementById("interactionPrompt")
-        let objectInSight = false
-
         for (const ob of objects) {
-            if (ob.interactionHandler && ob.interactionMode === 'hold') {
-                const handler = ob.interactionHandler
-
-                if (!handler.isHeld && !heldObject && isEPressed) {
-                    handler.tryHoldFromCameraRay()
-                    if (handler.isHeld) heldObject = handler
-                } else if (handler.isHeld && !isEPressed) {
-                    handler.release()
-                    heldObject = null
-                }
-
-                // Verifica se ele está na mira para exibir o HUD
-                if (!handler.isHeld && !heldObject) {
-                    const { cameraPosition, cameraRotation } = getCameraState()
-                    const ray = handler.getForwardVector(cameraRotation)
-                    const hit = handler.triangleIntersection(cameraPosition, ray)
-                    if (hit) {
-                        objectInSight = true
-                    }
-                }
-            }
-
             ob.renderObject()
         }
-
-        if (objectInSight) {
-            promptEl.style.display = 'block'
-        } else {
-            promptEl.style.display = 'none'
-        }
-
 
         requestAnimationFrame(render)
     }

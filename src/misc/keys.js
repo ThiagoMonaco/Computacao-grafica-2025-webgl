@@ -16,5 +16,5 @@ function getKeys() {
 }
 
 
-export {getKeys, startKeys}
+export { getKeys, startKeys }
 

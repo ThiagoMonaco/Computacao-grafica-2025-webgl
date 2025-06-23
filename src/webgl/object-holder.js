@@ -1,8 +1,12 @@
+import { mat4 } from "gl-matrix"
 import { rayIntersectsTriangle } from "../misc/math-utils.js"
 import { getCameraState } from "./camera.js"
+import { DefaultInteractionHandler } from "./default-interaction-handler.js"
+import { setSightMessage } from "./sight.js"
+import { getKeys } from "../misc/keys.js"
 
 class ObjectHoldable {
-    constructor(initialPosition, scale = [1, 1, 1], triangles = []) {
+    constructor(objectId, initialPosition, scale = [1, 1, 1], triangles = []) {
         this.objectPosition = initialPosition
         this.scale = scale
         this.triangles = triangles
@@ -10,11 +14,70 @@ class ObjectHoldable {
         this.isHeld = false
         this.trajectory = []
         this.trajectoryIndex = 0
-        this.inFlight = false   // true enquanto estiver voando
-        this.phase = null       // 'out' ou 'back'
-        this.flightRotation = 0 // rotação acumulada em radianos
-        this.rotationSpeed = 0.1  // velocidade angular da rotação
+        this.inFlight = false
+        this.phase = null
+        this.flightRotation = 0
+        this.rotationSpeed = 0.1
+
+        this.isEPressed = false
+        this.objectId = objectId
+
+        window.addEventListener('mousedown', e => {
+            if (e.button === 0 && this.isHeld) {
+                this.throwBoomerang()
+            }
+        })
     }
+
+    handleKeyAction() {
+        const keysPressed = getKeys() 
+        this.isEPressed = keysPressed['e'] || keysPressed['E']
+    }
+
+    handleObjectPosition() {
+        this.handleKeyAction()
+        if (!this.isHeld && this.isEPressed) {
+            this.tryHoldFromCameraRay()
+        } else if (this.isHeld && !this.isEPressed) {
+            this.release()
+        }
+
+        if (!this.isHeld) {
+            const { cameraPosition, cameraRotation } = getCameraState()
+            const ray = this.getForwardVector(cameraRotation)
+            const hit = this.triangleIntersection(cameraPosition, ray)
+            setSightMessage(this.objectId, "Hold 'E' to pick up the object", !!hit)
+        }
+
+        this.updateWhileHeld()
+        this.objectPosition = this.getObjectPosition()
+        return this.objectPosition
+    }
+
+    getWorldMatrix() {
+        const translationMatrix = mat4.create()
+        mat4.translate(translationMatrix, translationMatrix, this.objectPosition)
+
+        let worldMatrix = translationMatrix
+
+        if (this.isHeld || this.inFlight) {
+            const rotationMatrix = mat4.create()
+
+            if (this.inFlight) {
+                mat4.rotateY(rotationMatrix, rotationMatrix, this.flightRotation)
+                mat4.rotateX(rotationMatrix, rotationMatrix, Math.PI / 2)
+            }
+
+            worldMatrix = mat4.multiply(mat4.create(), worldMatrix, rotationMatrix)
+            const scaleMatrix = mat4.create()
+            mat4.scale(scaleMatrix, scaleMatrix, this.scale)
+            worldMatrix = mat4.multiply(mat4.create(), worldMatrix, scaleMatrix)
+            return worldMatrix
+        }
+        const defaultHandler = new DefaultInteractionHandler(this.objectId, this.objectPosition, this.scale, this.triangles, this.rotation)
+        return defaultHandler.getWorldMatrix()
+    }
+
 
     tryHoldFromCameraRay() {
         const { cameraPosition, cameraRotation } = getCameraState()
@@ -27,19 +90,12 @@ class ObjectHoldable {
     }
 
     updateWhileHeld() {
-        // 1. Se estiver em voo (trajetória ativa)
         if (this.inFlight) {
-            // Atualiza posição na trajetória
             this.objectPosition = this.trajectory[this.trajectoryIndex++]
-
-            // Atualiza rotação acumulada para o giro
             this.flightRotation += this.rotationSpeed
-
             if (this.trajectoryIndex >= this.trajectory.length) {
                 if (this.phase === 'out') {
-                    // Só gera a trajetória de volta se ainda não tiver gerado
-                    if (this.phase !== 'back') { // evita gerar múltiplas vezes
-                        // Começa a gerar a trajetória de volta
+                    if (this.phase !== 'back') {
                         const start = [...this.objectPosition]
                         const end = this._getHandPosition()
                         const { cameraRotation } = getCameraState()
@@ -54,7 +110,6 @@ class ObjectHoldable {
                         const height = 5
                         const steps = 180
 
-                        // Pontos de controle para a volta (curva espelhada)
                         const backP1 = [
                             start[0] + (end[0] - start[0]) * 0.33 - right[0] * lateralOffset,
                             Math.max(start[1], end[1]) + height,
@@ -67,7 +122,6 @@ class ObjectHoldable {
                             start[2] + (end[2] - start[2]) * 0.66 - right[2] * lateralOffset,
                         ]
 
-                        // Gera curva de volta
                         this.trajectory = []
                         for (let t = 0; t <= 1; t += 1 / steps) {
                             this.trajectory.push([
@@ -81,26 +135,22 @@ class ObjectHoldable {
                         this.trajectoryIndex = 0
                     }
                 } else if (this.phase === 'back') {
-                    // Chegou na mão, para o voo e segura o objeto
                     this.inFlight = false
                     this.isHeld = true
                     this.phase = null
                     this.trajectory = []
                     this.trajectoryIndex = 0
 
-                    // Resetar rotação para ficar "normal" na mão
                     this.flightRotation = 0
                     this.rotationSpeed = 0
                 }
             }
 
-            return // não processa mais nada enquanto em voo
+            return
         }
 
-        // 2. Se não está voando e não está sendo segurado → nada a fazer
         if (!this.isHeld) return
 
-        // 3. Objeto está sendo segurado: atualizar posição fixa na mão
         this.objectPosition = this._getHandPosition()
     }
 
@@ -220,7 +270,6 @@ class ObjectHoldable {
             cameraPosition[2] + forward[2] * (distanceOut * 0.66) + right[2] * lateralOffset,
         ]
 
-        // Gera curva de ida
         this.trajectory = []
         for (let t = 0; t <= 1; t += 1 / steps) {
             this.trajectory.push([

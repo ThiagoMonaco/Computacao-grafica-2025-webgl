@@ -17,6 +17,7 @@ export async function startObject(obj, meshProgramInfo, gl, options = {}) {
         initialPosition = [0, 0, 0],
         rotation = [0, 0, 0],
         scale = [1, 1, 1],
+        standByRotation = [0, 0, 0],
     } = options
 
     const objectData = getObjectData(obj)
@@ -53,19 +54,19 @@ export async function startObject(obj, meshProgramInfo, gl, options = {}) {
     const position = data.position
     const triangles = getTriangles(data.materialGroups, position)
 
-    let interactionHandler = new DefaultInteractionHandler(id, initialPosition, scale, triangles, rotation)
+    let interactionHandler;
     switch (interactionMode) {
         case 'translate':
-            interactionHandler = new ObjectTranslation(id, initialPosition, scale, triangles, rotation)
+            interactionHandler = new ObjectTranslation(id, initialPosition, scale, triangles, rotation, standByRotation)
             break
         case 'hold':
-            interactionHandler = new ObjectHoldable(id, initialPosition, scale, triangles)
+            interactionHandler = new ObjectHoldable(id, initialPosition, scale, triangles, rotation, standByRotation)
             break
         case 'focus':
-            interactionHandler = new ObjectView(id, initialPosition, scale, triangles, rotation, true)
+            interactionHandler = new ObjectView(id, initialPosition, scale, triangles, rotation, standByRotation)
             break
         default:
-            interactionHandler = new DefaultInteractionHandler(id, initialPosition, scale, triangles, rotation)
+            interactionHandler = new DefaultInteractionHandler(id, initialPosition, scale, triangles, rotation, standByRotation)
     }
 
     const vaosByMaterial = {}

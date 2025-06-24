@@ -16,7 +16,8 @@ async function loadObjectsFromJSON(filePath) {
             initialPosition: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: 1,
-            name: "suzanne"
+            name: "suzanne",
+            standByRotation: [0, 0, 0]
         }
 
         const objects = jsonData.objects.map(obj => ({
@@ -24,7 +25,8 @@ async function loadObjectsFromJSON(filePath) {
             initialPosition: obj.initialPosition ?? defaultValues.initialPosition,
             rotation: obj.rotation ?? defaultValues.rotation,
             scale: obj.scale ?? defaultValues.scale,
-            name: obj.name ?? defaultValues.name
+            name: obj.name ?? defaultValues.name,
+            standByRotation: obj.standByRotation ?? defaultValues.standByRotation,
         }))
 
         return objects

@@ -8,7 +8,7 @@ let savedMouseHandler = null
 let activeObjectId = null
 
 class ObjectView {
-    constructor(objectId, initialPosition, scale = [1, 1, 1], triangles = [], rotation = [0, 0, 0]) {
+    constructor(objectId, initialPosition, scale = [1, 1, 1], triangles = [], rotation = [0, 0, 0], standByRotation = [0, 0, 0]) {
         this.objectId = objectId
         this.originalPosition = [...initialPosition]
         this.objectPosition = [...initialPosition]
@@ -17,6 +17,7 @@ class ObjectView {
         this.originalRotation = [...rotation]
         this.rotationAngles = [...rotation]
         this.triangles = triangles
+        this.standByRotation = [...standByRotation]
 
         this.mode = 'default'
 
@@ -121,6 +122,10 @@ class ObjectView {
             const ray = this.getForwardVector(cameraRotation)
             const hit = this.triangleIntersection(cameraPosition, ray)
             setSightMessage(this.objectId, "Press 'R' focus on object", !!hit)
+
+            this.rotationAngles[0] += this.standByRotation[0]
+            this.rotationAngles[1] += this.standByRotation[1]
+            this.rotationAngles[2] += this.standByRotation[2]
         }
 
         return this.objectPosition

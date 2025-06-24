@@ -6,10 +6,12 @@ import { setSightMessage } from "../sight.js"
 import { getKeys } from "../../misc/keys.js"
 
 class ObjectHoldable {
-    constructor(objectId, initialPosition, scale = [1, 1, 1], triangles = []) {
+    constructor(objectId, initialPosition, scale = [1, 1, 1], triangles = [], rotation = [0, 0, 0], standByRotation = [0, 0, 0]) {
         this.objectPosition = initialPosition
         this.scale = scale
         this.triangles = triangles
+        this.rotation = rotation
+        this.standByRotation = standByRotation
 
         this.isHeld = false
         this.trajectory = []
@@ -47,6 +49,13 @@ class ObjectHoldable {
             const ray = this.getForwardVector(cameraRotation)
             const hit = this.triangleIntersection(cameraPosition, ray)
             setSightMessage(this.objectId, "Hold 'E' to pick up the object", !!hit)
+
+            if (!this.inFlight) {
+                this.rotation[0] += this.standByRotation[0]
+                this.rotation[1] += this.standByRotation[1]
+                this.rotation[2] += this.standByRotation[2]
+            }
+
         }
 
         this.updateWhileHeld()
@@ -66,6 +75,10 @@ class ObjectHoldable {
             if (this.inFlight) {
                 mat4.rotateY(rotationMatrix, rotationMatrix, this.flightRotation)
                 mat4.rotateX(rotationMatrix, rotationMatrix, Math.PI / 2)
+            } else {
+                mat4.rotateX(rotationMatrix, rotationMatrix, this.rotation[0])
+                mat4.rotateY(rotationMatrix, rotationMatrix, this.rotation[1])
+                mat4.rotateZ(rotationMatrix, rotationMatrix, this.rotation[2])
             }
 
             worldMatrix = mat4.multiply(mat4.create(), worldMatrix, rotationMatrix)

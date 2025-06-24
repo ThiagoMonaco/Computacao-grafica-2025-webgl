@@ -9,13 +9,14 @@
       "name": "suzanne",
       "interactionMode": "focus",
       "initialPosition": [-3, 2, 3],
-      "scale": 0.5
+      "scale": 0.5,
+      "standByRotation": [0, 0.015, 0]
     },
     {
       "name": "boomerang",
       "interactionMode": "hold",
-      "initialPosition": [3, 2, 3],
-      "rotation": [-90, 0, 0],
+      "initialPosition": [3, 2.5, 3.5],
+      "rotation": [-45, -45, 0],
       "scale": 0.05
     },
     {
@@ -23,7 +24,8 @@
       "interactionMode": "focus",
       "initialPosition": [-2, 2, 0],
       "scale": 0.15,
-      "rotation": [90, 0, 0]
+      "rotation": [90, 0, 0],
+      "standByRotation": [0, 0.015, 0]
     },
     {
       "name": "side-table",

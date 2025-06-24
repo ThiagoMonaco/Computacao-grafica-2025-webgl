@@ -34,10 +34,9 @@ async function scene (objectsData) {
 
     const objects = await Promise.all(objectsData.map(obj => { 
         const options = {
-            interactionMode: obj.interactionMode,
-            initialPosition: obj.initialPosition,
+            ...obj,
             rotation: obj.rotation.map(degToRad),
-            scale: [obj.scale, obj.scale, obj.scale]
+            scale: [obj.scale, obj.scale, obj.scale],
         }
 
         return startObject(obj.name, meshProgramInfo, gl, options)

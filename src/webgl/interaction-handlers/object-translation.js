@@ -3,7 +3,7 @@ import { rayIntersectsTriangle } from "../../misc/math-utils.js"
 import { getCameraState } from "../camera.js"
 
 class ObjectTranslation {
-    constructor(objectId, initialPosition, scale = [1, 1, 1], triangles = [], rotation) {
+    constructor(objectId, initialPosition, scale = [1, 1, 1], triangles = [], rotation, standByRotation = [0, 0, 0]) {
         this.objectPosition = initialPosition
         this.scale = scale
         this.triangles = triangles
@@ -11,6 +11,7 @@ class ObjectTranslation {
         this.movePath = []
         this.rotation = rotation
         this.objectId = objectId
+        this.standByRotation = standByRotation
 
         const canvas = document.querySelector("#canvas")
         canvas.addEventListener('mousedown', () => this.handleClick())
@@ -21,6 +22,10 @@ class ObjectTranslation {
         if (this.movePath.length > 0) {
             const newPos = this.movePath.shift()
             this.setObjectPosition(newPos)
+        } else {
+            this.rotation[0] += this.standByRotation[0]
+            this.rotation[1] += this.standByRotation[1]
+            this.rotation[2] += this.standByRotation[2]
         }
         return this.objectPosition
     } 

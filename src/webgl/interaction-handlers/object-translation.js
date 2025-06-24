@@ -74,39 +74,38 @@ class ObjectTranslation {
         }
     }
 
-triangleIntersection(origin, dir) {
-    let closestHit = null
-    let minDist = Infinity
+    triangleIntersection(origin, dir) {
+        let closestHit = null
+        let minDist = Infinity
+        const pos = this.objectPosition
+        const scl = this.scale
 
-    const pos = this.objectPosition
-    const scl = this.scale
+        for (const tri of this.triangles) {
+            const v0 = [
+                tri[0][0] * scl[0] + pos[0],
+                tri[0][1] * scl[1] + pos[1],
+                tri[0][2] * scl[2] + pos[2],
+            ]
+            const v1 = [
+                tri[1][0] * scl[0] + pos[0],
+                tri[1][1] * scl[1] + pos[1],
+                tri[1][2] * scl[2] + pos[2],
+            ]
+            const v2 = [
+                tri[2][0] * scl[0] + pos[0],
+                tri[2][1] * scl[1] + pos[1],
+                tri[2][2] * scl[2] + pos[2],
+            ]
 
-    for (const tri of this.triangles) {
-        const v0 = [
-            tri[0][0] * scl[0] + pos[0],
-            tri[0][1] * scl[1] + pos[1],
-            tri[0][2] * scl[2] + pos[2],
-        ]
-        const v1 = [
-            tri[1][0] * scl[0] + pos[0],
-            tri[1][1] * scl[1] + pos[1],
-            tri[1][2] * scl[2] + pos[2],
-        ]
-        const v2 = [
-            tri[2][0] * scl[0] + pos[0],
-            tri[2][1] * scl[1] + pos[1],
-            tri[2][2] * scl[2] + pos[2],
-        ]
-
-        const hit = rayIntersectsTriangle(origin, dir, v0, v1, v2)
-        if (hit && hit.t < minDist) {
-            minDist = hit.t
-            closestHit = { ...hit, triangle: [v0, v1, v2] }
+            const hit = rayIntersectsTriangle(origin, dir, v0, v1, v2)
+            if (hit && hit.t < minDist) {
+                minDist = hit.t
+                closestHit = { ...hit, triangle: [v0, v1, v2] }
+            }
         }
-    }
 
-    return closestHit
-}
+        return closestHit
+    }
 
     getForwardVector(cameraRotation) {
         return [

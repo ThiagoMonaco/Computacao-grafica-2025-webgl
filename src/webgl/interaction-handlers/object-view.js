@@ -1,4 +1,4 @@
-import { mat4 } from "gl-matrix"
+import { mat4, vec3 } from "gl-matrix"
 import { rayIntersectsTriangle } from "../../misc/math-utils.js"
 import { getCameraState, updateCameraState } from "../camera.js"
 import { setSightMessage } from "../sight.js"
@@ -34,6 +34,7 @@ class ObjectView {
                     const ray = this.getForwardVector(cameraRotation)
                     const hit = this.triangleIntersection(cameraPosition, ray)
 
+                    console.log(hit)
                     if (hit && (activeObjectId === null || activeObjectId === this.objectId)) {
                         activeObjectId = this.objectId
                         this.toggleRotationMode()
@@ -76,7 +77,7 @@ class ObjectView {
             this.savedCameraSpeed = camera.movementSpeed
             updateCameraState('movementSpeed', 0)
 
-            this.objectPosition = this._getFrontOfCamera(3.5)
+            this.objectPosition = this._getFrontOfCamera(1.5)
             this.rotationAngles = [...this.originalRotation]
             this.mode = 'rotate'
 
@@ -148,13 +149,13 @@ class ObjectView {
     triangleIntersection(origin, dir) {
         let closestHit = null
         let minDist = Infinity
-        const pos = this.objectPosition
-        const scl = this.scale
+
+        const worldMatrix = this.getWorldMatrix()
 
         for (const tri of this.triangles) {
-            const v0 = [tri[0][0] * scl[0] + pos[0], tri[0][1] * scl[1] + pos[1], tri[0][2] * scl[2] + pos[2]]
-            const v1 = [tri[1][0] * scl[0] + pos[0], tri[1][1] * scl[1] + pos[1], tri[1][2] * scl[2] + pos[2]]
-            const v2 = [tri[2][0] * scl[0] + pos[0], tri[2][1] * scl[1] + pos[1], tri[2][2] * scl[2] + pos[2]]
+            const v0 = vec3.transformMat4([], tri[0], worldMatrix)
+            const v1 = vec3.transformMat4([], tri[1], worldMatrix)
+            const v2 = vec3.transformMat4([], tri[2], worldMatrix)
 
             const hit = rayIntersectsTriangle(origin, dir, v0, v1, v2)
             if (hit && hit.t < minDist) {

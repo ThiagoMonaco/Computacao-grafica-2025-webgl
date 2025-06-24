@@ -6,8 +6,9 @@ import { createProgramFromSources } from './webgl/shaders.js'
 import { setUniforms } from './webgl/uniforms.js'
 import { resizeCanvasToDisplaySize } from './webgl/utils.js'
 import { perspective, lookAt, inverse, identity, normalize } from './misc/math-utils.js'
+import { loadObjectsFromJSON } from './misc/object-json-parser.js'
 
-async function scene () {
+async function scene (objectsData) {
     const canvas = document.querySelector("#canvas")
     const gl = canvas.getContext("webgl2")
     if (!gl) return
@@ -31,16 +32,16 @@ async function scene () {
         return d * Math.PI / 180
     }
 
-    const objects = [
-        await startObject('grass', meshProgramInfo, gl, { interactionMode: null, initialPosition: [0, 0, 0], rotation: [degToRad(90), 0, 0] }),
-        await startObject('suzanne', meshProgramInfo, gl, { interactionMode: 'focus', initialPosition: [0, 5, 0] }),
-        await startObject('boomerang', meshProgramInfo, gl, { interactionMode: 'hold', initialPosition: [0, 1, 5], rotation: [0, 0, 0], scale: [0.1, 0.1, 0.1] }),
-        await startObject('ps1', meshProgramInfo, gl, { interactionMode: 'focus', initialPosition: [-15, 0, 0] }),
-        await startObject('side-table', meshProgramInfo, gl, { interactionMode: 'translate', initialPosition: [15, 0, 0], rotation: [degToRad(-90), 0, 0], scale: [0.05, 0.05, 0.05] }),
-        await startObject('barrel', meshProgramInfo, gl),
-        await startObject('cart', meshProgramInfo, gl, { interactionMode: 'translate', initialPosition: [-10, 0.5, 0] }),
-        await startObject('crade', meshProgramInfo, gl, { interactionMode: 'translate', initialPosition: [10, 0, 0] }),
-    ]
+    const objects = await Promise.all(objectsData.map(obj => { 
+        const options = {
+            interactionMode: obj.interactionMode,
+            initialPosition: obj.initialPosition,
+            rotation: obj.rotation.map(degToRad),
+            scale: [obj.scale, obj.scale, obj.scale]
+        }
+
+        return startObject(obj.name, meshProgramInfo, gl, options)
+    }))
 
     let lastTime = 0
     gl.enable(gl.BLEND)
@@ -103,5 +104,6 @@ async function scene () {
     requestAnimationFrame(render)
 }
 
-scene()
+const objectsData = await loadObjectsFromJSON('../public/objects.json')
+scene(objectsData)
 

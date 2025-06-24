@@ -13,8 +13,8 @@ async function scene (objectsData) {
     const gl = canvas.getContext("webgl2")
     if (!gl) return
 
-    let vs = await fetch('../public/shaders/vertex-shader.vs')
-    let fs = await fetch('../public/shaders/fragment-shader.fs')
+    let vs = await fetch('../shaders/vertex-shader.vs')
+    let fs = await fetch('../shaders/fragment-shader.fs')
     vs = await vs.text()
     fs = await fs.text()
 
@@ -103,6 +103,7 @@ async function scene (objectsData) {
     requestAnimationFrame(render)
 }
 
-const objectsData = await loadObjectsFromJSON('../public/objects.json')
-scene(objectsData)
+loadObjectsFromJSON('../objects.json').then(objectsData => {
+    scene(objectsData)
+})
 

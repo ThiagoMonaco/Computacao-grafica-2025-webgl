@@ -32,15 +32,14 @@ async function scene () {
     }
 
     const objects = [
-        await startObject('grass', 'grass', meshProgramInfo, gl, null, [0, 0, 0], [degToRad(90), 0, 0]),
-        await startObject('suzanne', 'suzanne', meshProgramInfo, gl, 'translate', [0, 5, 0]),
-        await startObject('boomerang', null, meshProgramInfo, gl, 'hold', [0, 1, 5], [0, 0, 0], [0.1, 0.1, 0.1]),
-        await startObject('ps1', null, meshProgramInfo, gl, 'translate', [-15, 0, 0]),
-        await startObject('side-table', null, meshProgramInfo, gl, 'translate', [15, 0, 0], [degToRad(-90), 0, 0], [0.05, 0.05, 0.05]),
-        // await startObject('urban-table', null, meshProgramInfo, gl, 'translate', [10, 10, 0], [degToRad(-90), 0, 0]),
-        await startObject('barrel', null, meshProgramInfo, gl, null),
-        await startObject('cart', null, meshProgramInfo, gl, 'translate', [-10, 0.5, 0]),
-        await startObject('crade', null, meshProgramInfo, gl, 'translate', [10, 0, 0]),
+        await startObject('grass', meshProgramInfo, gl, { interactionMode: null, initialPosition: [0, 0, 0], rotation: [degToRad(90), 0, 0] }),
+        await startObject('suzanne', meshProgramInfo, gl, { interactionMode: 'focus', initialPosition: [0, 5, 0] }),
+        await startObject('boomerang', meshProgramInfo, gl, { interactionMode: 'hold', initialPosition: [0, 1, 5], rotation: [0, 0, 0], scale: [0.1, 0.1, 0.1] }),
+        await startObject('ps1', meshProgramInfo, gl, { interactionMode: 'focus', initialPosition: [-15, 0, 0] }),
+        await startObject('side-table', meshProgramInfo, gl, { interactionMode: 'translate', initialPosition: [15, 0, 0], rotation: [degToRad(-90), 0, 0], scale: [0.05, 0.05, 0.05] }),
+        await startObject('barrel', meshProgramInfo, gl),
+        await startObject('cart', meshProgramInfo, gl, { interactionMode: 'translate', initialPosition: [-10, 0.5, 0] }),
+        await startObject('crade', meshProgramInfo, gl, { interactionMode: 'translate', initialPosition: [10, 0, 0] }),
     ]
 
     let lastTime = 0

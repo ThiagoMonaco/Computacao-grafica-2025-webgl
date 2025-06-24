@@ -8,10 +8,18 @@ import { ObjectTranslation } from './webgl/interaction-handlers/object-translati
 import { ObjectHoldable } from './webgl/interaction-handlers/object-holder.js'
 import { DefaultInteractionHandler } from './webgl/interaction-handlers/default-interaction-handler.js'
 import { getTriangles } from './webgl/triangles.js'
+import { ObjectView } from './webgl/interaction-handlers/object-view.js'
 
 let lastId = 0
-export async function startObject(obj, shader, meshProgramInfo, gl, interactionMode = null, initialPosition = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1]) {
-    const objectData = getObjectData(obj, shader)
+export async function startObject(obj, meshProgramInfo, gl, options = {}) {
+    const { 
+        interactionMode = null,
+        initialPosition = [0, 0, 0],
+        rotation = [0, 0, 0],
+        scale = [1, 1, 1],
+    } = options
+
+    const objectData = getObjectData(obj)
     const id = lastId++
 
     const response = await fetch(objectData.obj)
@@ -52,6 +60,9 @@ export async function startObject(obj, shader, meshProgramInfo, gl, interactionM
             break
         case 'hold':
             interactionHandler = new ObjectHoldable(id, initialPosition, scale, triangles)
+            break
+        case 'focus':
+            interactionHandler = new ObjectView(id, initialPosition, scale, triangles, rotation, true)
             break
         default:
             interactionHandler = new DefaultInteractionHandler(id, initialPosition, scale, triangles, rotation)

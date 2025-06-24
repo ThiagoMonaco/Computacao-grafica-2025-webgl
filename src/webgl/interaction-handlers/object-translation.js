@@ -1,6 +1,7 @@
 import { mat4 } from "gl-matrix"
 import { rayIntersectsTriangle } from "../../misc/math-utils.js"
 import { getCameraState } from "../camera.js"
+import { setSightMessage } from "../sight.js"
 
 class ObjectTranslation {
     constructor(objectId, initialPosition, scale = [1, 1, 1], triangles = [], rotation, standByRotation = [0, 0, 0]) {
@@ -26,6 +27,12 @@ class ObjectTranslation {
             this.rotation[0] += this.standByRotation[0]
             this.rotation[1] += this.standByRotation[1]
             this.rotation[2] += this.standByRotation[2]
+            const { cameraPosition, cameraRotation } = getCameraState()
+            const ray = this.getForwardVector(cameraRotation)
+            const hit = this.triangleIntersection(cameraPosition, ray)
+            if (!this.selected) { 
+                setSightMessage(this.objectId, "Click with the left button to select", !!hit)
+            }
         }
         return this.objectPosition
     } 
@@ -58,8 +65,10 @@ class ObjectTranslation {
             const hit = this.triangleIntersection(cameraPosition, ray)
             if (hit) {
                 this.selected = true
+                setSightMessage(this.objectId, "Click with the right button to move the object!", true)
             }
         } else {
+            setSightMessage(this.objectId, null, false)
             const dist = 10
             const target = [
                 cameraPosition[0] + ray[0] * dist,

@@ -11,11 +11,17 @@
         <div id="app">
             <canvas id="canvas"></canvas>
             <div id="crosshair">+</div>
-            <div id="controls">
+            <div id="default-controls" class="controls">
                 <p>WASD = Move</p>
                 <p>1,2,3 = toggle lights</p>
                 <p>Click with mouse to move camera (esc to quit it)</p>
-                <p>To move the object, click on it one time and then click to the target position, the object will move to the target position</p>
+            </div>
+            <div id="focus-controls" class="controls">
+                <p>Move the object with the mouse</p>
+                <p>Press '+' to increase the scale of the object</p>
+                <p>Press '-' to decrease the scale of the object</p>
+                <p>1,2,3 = toggle lights</p>
+                <p>Press r again to quit </p>
             </div>
             <div id="interactionPrompt" style="
                 position: fixed;

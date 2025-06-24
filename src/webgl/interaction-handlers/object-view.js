@@ -35,7 +35,6 @@ class ObjectView {
                     const ray = this.getForwardVector(cameraRotation)
                     const hit = this.triangleIntersection(cameraPosition, ray)
 
-                    console.log(hit)
                     if (hit && (activeObjectId === null || activeObjectId === this.objectId)) {
                         activeObjectId = this.objectId
                         this.toggleRotationMode()
@@ -95,12 +94,14 @@ class ObjectView {
             lights.fillLight.position = [center[0] - 4, center[1] + 2, center[2] + 4]
             lights.backLight.position = [center[0], center[1] + 2, center[2] - 4]
             setSightMessage(this.objectId,null , false)
+            this.toggleTutorial(true)
         } else {
             this.objectPosition = [...this.savedPosition]
             this.scale = [...this.savedScale]
             this.rotationAngles = [...this.originalRotation]
             updateCameraState('movementSpeed', this.savedCameraSpeed)
             this.mode = 'default'
+            this.toggleTutorial(false)
 
             if (canvas && savedMouseHandler) {
                 canvas.addEventListener('mousemove', savedMouseHandler)
@@ -200,6 +201,18 @@ class ObjectView {
 
     isInRotationMode() {
         return this.mode === 'rotate'
+    }
+
+    toggleTutorial(toggle) {
+        const controls = document.getElementById('focus-controls')
+        const defaultControls = document.getElementById('default-controls')
+        if (toggle) {
+            controls.style.display = 'block'
+            defaultControls.style.display = 'none'
+        } else {
+            controls.style.display = 'none'
+            defaultControls.style.display = 'block'
+        }
     }
 }
 

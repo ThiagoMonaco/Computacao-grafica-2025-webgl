@@ -1,0 +1,143 @@
+# Blender 4.2.0 MTL File: 'chairs.blend'
+# www.blender.org
+
+newmtl Barrel
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd barrels_3_2k/barrel_Barrel_BaseColor.png
+map_Ns barrels_3_2k/barrel_Barrel_Roughness.png
+map_refl barrels_3_2k/barrel_Barrel_Metallic.png
+
+newmtl Decal_Lion_Creast
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd C:/LionCrest_BaseColor.png
+map_Ns C:/LionCrest_Roughness.png
+map_refl C:/LionCrest_Metallic.png
+map_d C:/LionCrest_Opacity.png
+map_Bump -bm 1.000000 C:/LionCrest_Normal_OpenGL.png
+
+newmtl Decal_Whead
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd C:/Wheat_BaseColor.png
+map_Ns C:/Wheat_Roughness.png
+map_refl C:/Wheat_Metallic.png
+map_d C:/Wheat_Opacity.png
+map_Bump -bm 1.000000 C:/Wheat_Normal_OpenGL.png
+
+newmtl Iron_dark
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Ns C:/IronDark_Roughness.png
+map_refl C:/IronDark_Metallic.png
+map_d C:/IronDark_Opacity.png
+map_Bump -bm 1.500000 C:/IronDark_Normal_DirectX.png
+
+newmtl Silver_Basic
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Ns C:/SilverBasic_Roughness.png
+map_d C:/SilverBasic_Opacity.png
+map_Bump -bm 1.000000 C:/SilverBasic_Normal_OpenGL.png
+
+newmtl Water
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump -bm 1.000000 C:/DefaultMaterial_Normal_OpenGL.png
+
+newmtl Wood_Coarse
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ns C:/WoodCoarse_Roughness.png
+map_refl C:/WoodCoarse_Metallic.png
+map_Bump -bm 1.000000 C:/WoodCoarse_Normal_OpenGL.png
+
+newmtl Wood_Coarse.006
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ns C:/WoodCoarse_Roughness.png
+map_refl C:/WoodCoarse_Metallic.png
+map_Bump -bm 1.000000 C:/WoodCoarse_Normal_OpenGL.png
+
+newmtl Wood_Coarse.007
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ns C:/WoodCoarse_Roughness.png
+map_refl C:/WoodCoarse_Metallic.png
+map_Bump -bm 1.000000 C:/WoodCoarse_Normal_OpenGL.png
+
+newmtl Wood_Coarse.008
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ns C:/WoodCoarse_Roughness.png
+map_refl C:/WoodCoarse_Metallic.png
+map_Bump -bm 1.000000 C:/WoodCoarse_Normal_OpenGL.png
+
+newmtl Wood_Stylized_Plank_Dark
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ns C:/WoodStylizedPlank_Roughness.png
+map_refl C:/WoodStylizedPlank_Metallic.png
+map_Bump -bm 1.500000 C:/WoodStylizedPlank_Normal_OpenGL.png
+
+newmtl Wood_stylized_plak.001
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ns C:/WoodStylizedPlank_Roughness.png
+map_refl C:/WoodStylizedPlank_Metallic.png
+map_Bump -bm 1.500000 C:/WoodStylizedPlank_Normal_OpenGL.png

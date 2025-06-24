@@ -1,0 +1,22 @@
+# Blender 3.6.3 MTL File: 'Minecraft Cart.blend'
+# www.blender.org
+
+newmtl Cart_Material
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 1
+map_Kd ../Textures/Plank.png
+map_d ../Textures/Plank.png
+
+newmtl Wheal_Cup_Material
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 1
+map_Kd ../Textures/texture.png 
+map_d ../Textures/texture.png

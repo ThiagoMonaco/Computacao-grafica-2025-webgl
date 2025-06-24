@@ -35,7 +35,12 @@ async function scene () {
         await startObject('grass', 'grass', meshProgramInfo, gl, null, [0, 0, 0], [degToRad(90), 0, 0]),
         await startObject('suzanne', 'suzanne', meshProgramInfo, gl, 'translate', [0, 5, 0]),
         await startObject('boomerang', null, meshProgramInfo, gl, 'hold', [0, 1, 5], [0, 0, 0], [0.1, 0.1, 0.1]),
-        await startObject('cube', 'brick', meshProgramInfo, gl, 'hold', [5, 0, 0]),
+        await startObject('ps1', null, meshProgramInfo, gl, 'translate', [-15, 0, 0]),
+        await startObject('side-table', null, meshProgramInfo, gl, 'translate', [15, 0, 0], [degToRad(-90), 0, 0], [0.05, 0.05, 0.05]),
+        // await startObject('urban-table', null, meshProgramInfo, gl, 'translate', [10, 10, 0], [degToRad(-90), 0, 0]),
+        await startObject('barrel', null, meshProgramInfo, gl, null),
+        await startObject('cart', null, meshProgramInfo, gl, 'translate', [-10, 0.5, 0]),
+        await startObject('crade', null, meshProgramInfo, gl, 'translate', [10, 0, 0]),
     ]
 
     let lastTime = 0

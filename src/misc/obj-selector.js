@@ -1,54 +1,46 @@
-export function getObjectData (obj, tex) {
-    let object
-    switch (obj) {
-        case 'suzanne':
-            object = {
-                obj: '../public/assets/Modelos3D/Suzanne.obj',
-                mtl: '../public/assets/Modelos3D/Suzanne.mtl',
-            }
-            break;
-        case 'cube':
-            object = {
-                obj: '../public/assets/Modelos3D/Cube.obj',
-                mtl: '../public/assets/Modelos3D/Cube.mtl',
-            }
-            break;
-        case 'grass': {
-            object = {
-                obj: '../public/assets/Modelos3D/grass/grass.obj',
-                mtl: '../public/assets/Modelos3D/grass/grass.mtl',
-            }
-            break;
-        }
-        case 'boomerang': {
-            object = {
-                obj: '../public/assets/Modelos3D/boomberang/boomerang.obj',
-                mtl: '../public/assets/Modelos3D/boomberang/boomerang.mtl',
-            }
-            break;
-        }
-        default:
-            object = {
-                obj: '../public/assets/Modelos3D/Suzanne.obj',
-                mtl: '../public/assets/Modelos3D/Suzanne.mtl',
-            } 
+export function getObjectData (obj) {
+    const data = {
+        "grass": {
+            obj: "../public/assets/Modelos3D/grass/grass.obj",
+            mtl: "../public/assets/Modelos3D/grass/grass.mtl",
+        },
+        "suzanne": {
+            obj: "../public/assets/Modelos3D/suzanne/suzanne.obj",
+            mtl: "../public/assets/Modelos3D/suzanne/suzanne.mtl",
+        },
+        "boomerang": {
+            obj: "../public/assets/Modelos3D/boomerang/boomerang.obj",
+            mtl: "../public/assets/Modelos3D/boomerang/boomerang.mtl",
+        },
+        "ps1": {
+            obj: "../public/assets/Modelos3D/ps1/ps1/MemoryCard.obj",
+            mtl: "../public/assets/Modelos3D/ps1/ps1/MemoryCard.mtl",
+        },
+        "cube": {
+            obj: "../public/assets/Modelos3D/cube/Cube.obj",
+            mtl: "../public/assets/Modelos3D/cube/Cube.mtl",
+        },
+        "side-table": {
+            obj: "../public/assets/Modelos3D/table/side-table/SideTable2.obj",
+            mtl: "../public/assets/Modelos3D/table/side-table/SideTable2.mtl",
+        },
+        "barrel": {
+            obj: "../public/assets/Modelos3D/barrel/barrel2.obj",
+            mtl: "../public/assets/Modelos3D/barrel/barrel2.mtl",
+        },
+        "cart": {
+            obj: "../public/assets/Modelos3D/cart/MinecraftCart/OBJ/MinecraftCart.obj",
+            mtl: "../public/assets/Modelos3D/cart/MinecraftCart/OBJ/MinecraftCart.mtl",
+        },
+        "crade": {
+            obj: "../public/assets/Modelos3D/crade/crades.obj",
+            mtl: "../public/assets/Modelos3D/crade/crades.mtl",
+        },
     }
 
-    switch (tex) {
-        case 'suzanne':
-            object.tex = '../public/assets/Modelos3D/Suzanne.png'
-            break;
-        case 'suzanneUV':
-            object.tex = '../public/assets/Modelos3D/SuzanneUV.png'
-            break;
-        case 'brick':
-            object.tex = '../public/assets/tex/pixelWall.png'
-           break;
-        case 'grass':
-            object.tex = '../public/assets/Modelos3D/grass/grass.jpg'
-            break;
-        default:
-            object.tex = null
+    return data[obj] || {
+        obj: null,
+        mtl: null
     }
-    return object
+
 }

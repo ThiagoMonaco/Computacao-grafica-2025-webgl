@@ -1,0 +1,143 @@
+# Blender 4.2.0 MTL File: 'crades.blend'
+# www.blender.org
+
+newmtl Decal_Eagle
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Ns C:/EagleCrest_Roughness.png
+map_refl C:/EagleCrest_Metallic.png
+map_d C:/EagleCrest_Opacity.png
+map_Bump -bm 1.000000 C:/EagleCrest_Normal_OpenGL.png
+
+newmtl Decal_Sword_1
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Ns C:/LionCrest_Roughness.png
+map_refl C:/LionCrest_Metallic.png
+map_d C:/LionCrest_Opacity.png
+map_Bump -bm 1.000000 C:/LionCrest_Normal_OpenGL.png
+
+newmtl Decal_Sword_2
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd C:/Swords_BaseColor.png
+map_Ns C:/Swords_Roughness.png
+map_refl C:/Swords_Metallic.png
+map_d C:/Swords_Opacity.png
+map_Bump -bm 1.000000 C:/Swords_Normal_OpenGL.png
+
+newmtl Iron_Grainy
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Ns C:/IronGrainy_Roughness.png
+map_refl C:/IronGrainy_Metallic.png
+map_d C:/IronGrainy_Opacity.png
+map_Bump -bm 1.000000 C:/IronGrainy_Normal_OpenGL.png
+
+newmtl Iron_dark
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Ns C:/IronDark_Roughness.png
+map_refl C:/IronDark_Metallic.png
+map_d C:/IronDark_Opacity.png
+map_Bump -bm 1.500000 C:/IronDark_Normal_DirectX.png
+
+newmtl Iron_old
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Ns C:/Ironold_Roughness.png
+map_refl C:/Ironold_Metallic.png
+map_d C:/Ironold_Opacity.png
+map_Bump -bm 1.500000 C:/Ironold_Normal_OpenGL.png
+
+newmtl Leather_Strab
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd C:/LeatherStraps_BaseColor.png
+map_Ns C:/LeatherStraps_Roughness.png
+map_refl C:/LeatherStraps_Metallic.png
+map_d C:/LeatherStraps_Opacity.png
+map_Bump -bm 1.000000 C:/LeatherStraps_Normal_OpenGL.png
+
+newmtl Wood_Stylized_Plank_Dark
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ns C:/WoodStylizedPlank_Roughness.png
+map_refl C:/WoodStylizedPlank_Metallic.png
+map_Bump -bm 1.500000 C:/WoodStylizedPlank_Normal_OpenGL.png
+
+newmtl Wood_stylized_plak
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ns C:/WoodStylizedPlank_Roughness.png
+map_refl C:/WoodStylizedPlank_Metallic.png
+map_Bump -bm 1.500000 C:/WoodStylizedPlank_Normal_OpenGL.png
+
+newmtl crade_large
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd large_crades_1_2k/large_crades_crade_large_BaseColor.png
+map_Ns large_crades_1_2k/large_crades_crade_large_Roughness.png
+map_refl large_crades_1_2k/large_crades_crade_large_Metallic.png
+
+newmtl cradle
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd chest_1_2k/chest_cradle_BaseColor.png
+map_Ns chest_1_2k/chest_cradle_Roughness.png
+map_refl chest_1_2k/chest_cradle_Metallic.png
+
+newmtl large_crade_4
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd crades4_2k/large_crades4_large_crade_4_BaseColor.png
+map_Ns crades4_2k/large_crades4_large_crade_4_Roughness.png
+map_refl crades4_2k/large_crades4_large_crade_4_Metallic.png

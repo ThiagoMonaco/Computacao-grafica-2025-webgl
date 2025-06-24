@@ -19,6 +19,9 @@ export function loadTexture(gl, url) {
         gl.generateMipmap(gl.TEXTURE_2D)
     }
     image.src = url
+    image.onerror = function () {
+        console.error(`Failed to load texture from ${url}`)
+    }
 
     return texture
 }

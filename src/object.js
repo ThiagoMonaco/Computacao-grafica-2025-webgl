@@ -18,12 +18,30 @@ export async function startObject(obj, shader, meshProgramInfo, gl, interactionM
     const text = await response.text()
     const data = parseOBJ(text)
 
-    const mtlName = data.materialsLibs[0]
-    const mtlResponse = await fetch(objectData.mtl)
+    const mtlUrl = objectData.mtl
+    const mtlResponse = await fetch(mtlUrl)
     const mtlText = await mtlResponse.text()
     const materials = parseMTL(mtlText)
 
-    const texture = loadTexture(gl, objectData.tex)
+    const baseDir = mtlUrl.substring(0, mtlUrl.lastIndexOf('/') + 1)
+
+    const texturesByMaterial = {}
+    const bumpTexturesByMaterial = {}
+    const specularTexturesByMaterial = {}
+
+    for (const [materialName, mat] of Object.entries(materials)) {
+        if (mat.map_Kd) {
+            texturesByMaterial[materialName] = loadTexture(gl, baseDir + mat.map_Kd)
+        }
+        if (mat.map_Bump) {
+            bumpTexturesByMaterial[materialName] = loadTexture(gl, baseDir + mat.map_Bump)
+        }
+        if (mat.map_Ks) {
+            specularTexturesByMaterial[materialName] = loadTexture(gl, baseDir + mat.map_Ks)
+        }
+    }
+
+
     const position = data.position
     const triangles = getTriangles(data.materialGroups, position)
 
@@ -52,29 +70,49 @@ export async function startObject(obj, shader, meshProgramInfo, gl, interactionM
         interactionHandler.handleObjectPosition()
         let worldMatrix = interactionHandler.getWorldMatrix()
 
-        const mat = materials[mtlName] || {}
-        setUniforms(gl, meshProgramInfo.program, {
-            world: worldMatrix,
-            diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
-            useTexture: Number(!!texture),
-        })
-
         for (const [materialName] of Object.entries(data.materialGroups)) {
             const mat = materials[materialName] || {}
+            const texture = texturesByMaterial[materialName] || null
+            const bump = bumpTexturesByMaterial?.[materialName] || null
+            const specular = specularTexturesByMaterial?.[materialName] || null
+
+            const baseDiffuse = mat.diffuse
+            const useKd = baseDiffuse && (baseDiffuse[0] + baseDiffuse[1] + baseDiffuse[2]) > 0
+            const finalDiffuse = useKd ? [...baseDiffuse, 1.0] : [1, 1, 1, 1]
+
             setUniforms(gl, meshProgramInfo.program, {
-                diffuse: mat.diffuse ? [...mat.diffuse, 1.0] : [1, 1, 1, 1],
                 world: worldMatrix,
+                diffuse: finalDiffuse,
                 useTexture: Number(!!texture),
+                useBump: Number(!!bump),
+                useSpecularMap: Number(!!specular),
+                bumpScale: mat.bumpScale ?? 0.2, 
             })
 
-            gl.activeTexture(gl.TEXTURE0)
-            gl.bindTexture(gl.TEXTURE_2D, texture)
-            gl.uniform1i(gl.getUniformLocation(meshProgramInfo.program, "textureSampler"), 0)
+            if (texture) {
+                gl.activeTexture(gl.TEXTURE0)
+                gl.bindTexture(gl.TEXTURE_2D, texture)
+                gl.uniform1i(gl.getUniformLocation(meshProgramInfo.program, "textureSampler"), 0)
+            }
+
+            if (bump) {
+                gl.activeTexture(gl.TEXTURE1)
+                gl.bindTexture(gl.TEXTURE_2D, bump)
+                gl.uniform1i(gl.getUniformLocation(meshProgramInfo.program, "bumpSampler"), 1)
+            }
+
+            if (specular) {
+                gl.activeTexture(gl.TEXTURE2)
+                gl.bindTexture(gl.TEXTURE_2D, specular)
+                gl.uniform1i(gl.getUniformLocation(meshProgramInfo.program, "specularSampler"), 2)
+            }
+
             const vaoInfo = vaosByMaterial[materialName]
             gl.bindVertexArray(vaoInfo.vao)
             gl.drawElements(gl.TRIANGLES, vaoInfo.numIndices, gl.UNSIGNED_INT, 0)
             gl.bindVertexArray(null)
         }
+
     }
 
     return {

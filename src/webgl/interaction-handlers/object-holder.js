@@ -56,6 +56,8 @@ class ObjectHoldable {
                 this.rotation[2] += this.standByRotation[2]
             }
 
+        } else {
+            setSightMessage(this.objectId, "Click with the right mouse button to throw the object", true)
         }
 
         this.updateWhileHeld()

@@ -1,6 +1,7 @@
 # Computacao-grafica-2025-webgl
 
 Esse repósitorio possui o trabalho de Grau B da cadeira de Computação Gráfica da Unisinos (2025/1)
+
 Alunos: Evelyn Tag, Pedro Fleck e Thiago Mônaco
 
 Caso não queira executar o projeto localmente, é possível acessar ele através de:

@@ -57,7 +57,7 @@ class ObjectHoldable {
             }
 
         } else {
-            setSightMessage(this.objectId, "Click with the right mouse button to throw the object", true)
+            setSightMessage(this.objectId, "Click with the left mouse button to throw the object", true)
         }
 
         this.updateWhileHeld()
